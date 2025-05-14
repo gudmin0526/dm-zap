@@ -73,7 +73,7 @@ inline void dmzap_bio_endio(struct bio *bio, blk_status_t status)
 /*
  * Get the sequential write pointer (sector)
  */
-sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap, int wp_no)
+sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap)
 {	
 	return dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->wp;
 }
