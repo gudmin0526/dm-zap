@@ -54,7 +54,7 @@ static void dmzap_calc_shift_time(struct dmzap_target *dmzap,
 {
   int scale_factor = DMZAP_CB_SCALE_FACTOR;
   int nr_invalid_blocks = zone->nr_invalid_blocks;
-  int nr_valid_blocks = dmz_sect2blk(dmzap->dev->zone_nr_sectors) - nr_invalid_blocks; //TODO ZNS capacity: int nr_valid_blocks = dmz_sect2blk(victim->zone->capacity) - nr_invalid_blocks;
+  int nr_valid_blocks = dmz_sect2blk(dmzap->dev->zone_nr_sectors / 2048 * 1077) - nr_invalid_blocks; //TODO ZNS capacity: int nr_valid_blocks = dmz_sect2blk(victim->zone->capacity) - nr_invalid_blocks;
 
   if(cb >= dmzap->threshold_cb){
     zone->shift_time = currentTime;
@@ -860,7 +860,7 @@ void dmzap_copy_valid_data(struct dmzap_target *dmzap,
   sector_t nr_chunk_blocks = 0;
   sector_t i = 0;
   __u64 fresh_zone_block_length = 0;
-  sector_t zone_block_length = dmz_sect2blk(dmzap->dev->zone_nr_sectors); //TODO ZNS capacity: sector_t zone_block_length = dmz_sect2blk(victim->zone->capacity);
+  sector_t zone_block_length = dmz_sect2blk(dmzap->dev->zone_nr_sectors / 2048 * 1077); //TODO ZNS capacity: sector_t zone_block_length = dmz_sect2blk(victim->zone->capacity);
 
   /* We can only have one outstanding write at a time */
 	while(test_and_set_bit_lock(DMZAP_WR_OUTSTANDING,
@@ -892,7 +892,7 @@ void dmzap_copy_valid_data(struct dmzap_target *dmzap,
       fresh_zone = &dmzap->dmzap_zones[dmzap->dmzap_zone_wp];
 
       fresh_zone_block_length =
-        dmz_sect2blk(fresh_zone->zone->start + fresh_zone->zone->len) //TODO ZNS capacity: dmz_sect2blk(fresh_zone->zone->start + fresh_zone->zone->capacity)
+        dmz_sect2blk(fresh_zone->zone->start + fresh_zone->zone->capacity)//TODO ZNS capacity: dmz_sect2blk(fresh_zone->zone->start + fresh_zone->zone->capacity)
         - dmz_sect2blk(fresh_zone->zone->wp);
 
       if(fresh_zone_block_length < nr_chunk_blocks){
@@ -954,7 +954,7 @@ int dmzap_reset_zone (struct dmzap_target *dmzap, struct dmzap_zone *victim)
   //     type == BLK_ZONE_TYPE_CONVENTIONAL) return 0;
 
   ret = blkdev_zone_mgmt(dev->bdev, REQ_OP_ZONE_RESET,
-             victim->zone->start, dev->zone_nr_sectors, GFP_NOIO); //TODO ZNS capacity Not sure about that (maybe the line can stay as it is): victim->zone->start, victim->zone->capacity, GFP_NOIO);
+             victim->zone->start, victim->zone->len, GFP_NOIO); //TODO ZNS capacity Not sure about that (maybe the line can stay as it is): victim->zone->start, victim->zone->capacity, GFP_NOIO);
 
   if (ret) {
     dmz_dev_err(dev, "Reset zone %u failed %d",
@@ -1100,11 +1100,10 @@ static inline bool dmzap_target_idle(struct dmzap_target *dmzap)
  */
 static bool dmzap_should_reclaim(struct dmzap_target *dmzap)
 {
-  if (dmzap_target_idle(dmzap) && dmzap->reclaim->nr_free_zones
-			< dmzap->nr_internal_zones)
-    return true;
+  	// if (dmzap_target_idle(dmzap) && dmzap->reclaim->nr_free_zones
+	// 		< dmzap->nr_internal_zones)
+    // 	return true;
 
-  //return dmzap->reclaim->p_free_user_zones <= dmzap->reclaim_limit;
 	return dmzap->reclaim->p_free_zones <= dmzap->reclaim_limit;
 }
 
@@ -1119,6 +1118,18 @@ static void dmzap_reclaim_work(struct work_struct *work)
 
 	if (dmzap_bdev_is_dying(dmzap->dev))
 		return;
+	
+	if(WRITE_AMP_STAT) {
+		// pr_err("drive %s: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", dmzap->ddev->bdev->bd_disk->disk_name,
+		// dmzap->dmzap_zones[0].nr_invalid_blocks, dmzap->dmzap_zones[1].nr_invalid_blocks, dmzap->dmzap_zones[2].nr_invalid_blocks,
+		// dmzap->dmzap_zones[3].nr_invalid_blocks, dmzap->dmzap_zones[4].nr_invalid_blocks, dmzap->dmzap_zones[5].nr_invalid_blocks,
+		// dmzap->dmzap_zones[6].nr_invalid_blocks, dmzap->dmzap_zones[7].nr_invalid_blocks, dmzap->dmzap_zones[8].nr_invalid_blocks,
+		// dmzap->dmzap_zones[9].nr_invalid_blocks, dmzap->dmzap_zones[10].nr_invalid_blocks, dmzap->dmzap_zones[11].nr_invalid_blocks,
+		// dmzap->dmzap_zones[12].nr_invalid_blocks, dmzap->dmzap_zones[13].nr_invalid_blocks, dmzap->dmzap_zones[14].nr_invalid_blocks,
+		// dmzap->dmzap_zones[15].nr_invalid_blocks);
+		pr_err("drive %s: %lld", dmzap->ddev->bdev->bd_disk->disk_name, atomic64_read(&dmzap->write_cnt));
+	}
+
 
 	if (!dmzap_should_reclaim(dmzap)) {
 		mod_delayed_work(reclaim->wq, &reclaim->work, DMZAP_IDLE_PERIOD);

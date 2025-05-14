@@ -35,6 +35,8 @@
 
 #define HEAP_SIZE_SHRINK (DEF_HEAP_SIZE/2 - DEF_HEAP_SIZE/10)
 
+#define WRITE_AMP_STAT 0
+
 /*
  * dm-zap internal zone types
  */
@@ -201,6 +203,7 @@ struct dmzap_target {
 	struct blk_zone		*internal_zones;
 	/* write pointer that indicates the active zone */
 	u32 dmzap_zone_wp;
+	u32 dmzap_zone_wp_1;
 
 	//TODO pointers to list head
 	/* Pointer to user zones */
@@ -218,6 +221,7 @@ struct dmzap_target {
 
 	/* Write serialization for conventional zones */
 	unsigned long		write_bitmap;   /* Conventional zone write state bitmap */
+	unsigned long		write_bitmap_1;   /* Conventional zone write state bitmap */
 
 	/* For reclaim */
 	sector_t		capacity;
@@ -277,6 +281,7 @@ struct dmzap_target {
 	struct dmzap_fegc_heap fagc_heap;
 	struct mutex *user_zone_locks;
 
+	atomic64_t write_cnt;
 };
 
 /*
@@ -287,6 +292,7 @@ struct dmzap_bioctx {
 	struct bio		*bio;
 	refcount_t		ref;
 	sector_t		user_sec;
+	int wp_no;
 };
 
 /* dm-zap-target.c */
@@ -311,7 +317,7 @@ int dmzap_remap_copy(struct dmzap_target *dmzap,
 	sector_t read_backing_block, sector_t write_backing_block, sector_t len);
 
 
-sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap);
+sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap, int num);
 void dmzap_update_seq_wp(struct dmzap_target *dmzap, sector_t bio_sectors);
 inline void print_mapping(struct dmzap_target *dmzap);
 int dmzap_handle_discard(struct dmzap_target *dmzap, struct bio *bio);
@@ -355,7 +361,8 @@ struct dmzap_reclaim
 /*
  * Number of seconds of target BIO inactivity to consider the target idle.
  */
-#define DMZAP_IDLE_PERIOD		(10UL * HZ)
+// #define DMZAP_IDLE_PERIOD		(10UL * HZ)
+#define DMZAP_IDLE_PERIOD		msecs_to_jiffies(20000)
 
 /*
  * Number of seconds wa should be trace_printk'ed

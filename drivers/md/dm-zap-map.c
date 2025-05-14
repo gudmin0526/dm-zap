@@ -16,7 +16,7 @@ int dmzap_map_init(struct dmzap_target *dmzap)
 	struct dmzap_map *map = &dmzap->map;
 	sector_t l2d_sz, i;
 
-	l2d_sz = dmzap->dev_capacity >> 3;
+	l2d_sz = dmzap->dev_capacity >> (DMZ_BLOCK_SHIFT - SECTOR_SHIFT);
 
 	map->l2d_sz = l2d_sz;
 
@@ -65,7 +65,7 @@ int dmzap_map_update(struct dmzap_target *dmzap,
 	sector_t backing_block;
 
 	/* Out of bounds? */
-	if ((user + len) > (dmzap->dev_capacity >> 3)){
+	if ((user + len) > (dmzap->dev_capacity >> (DMZ_BLOCK_SHIFT - SECTOR_SHIFT))){
 		BUG();
 		return -1;
 	}
@@ -131,7 +131,7 @@ int dmzap_map_update_if_eq(struct dmzap_target *dmzap,
 	sector_t m = 0;
 
 	/* Out of bounds? */
-	if ((user + len) > (dmzap->capacity >> 3)){
+	if ((user + len) > (dmzap->capacity >> (DMZ_BLOCK_SHIFT - SECTOR_SHIFT))){
 		BUG();
 		return -1;
 	}

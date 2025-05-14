@@ -399,4 +399,3 @@ void heap_print(struct dmzap_target *dmzap, int heap_num){
 		dmz_dev_info(dmzap_ptr->dev, "[%d]: %u", j, dmzap->fegc_heaps[heap_num]->data[j]->seq);
 	}
 }
-

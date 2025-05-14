@@ -17,20 +17,20 @@
 /* TODO: this might not work for us. Calculate the need */
 #define DMZAP_MIN_BIOS		8192
 
-static struct kobject *zap_stat_kobject;
+// static struct kobject *zap_stat_kobject;
 struct dmzap_target* dmzap_ptr;
 struct mutex heap_increase_lock;
 
-static ssize_t reset_zap_stats(struct kobject *kobj, struct kobj_attribute *attr,
-                      const char *buf, size_t count)
-{
-	dmzap_ptr->nr_user_written_sec = 0;
-	dmzap_ptr->nr_gc_written_sec = 0;
-        return count;
-}
+// static ssize_t reset_zap_stats(struct kobject *kobj, struct kobj_attribute *attr,
+//                       const char *buf, size_t count)
+// {
+// 	dmzap_ptr->nr_user_written_sec = 0;
+// 	dmzap_ptr->nr_gc_written_sec = 0;
+//         return count;
+// }
 
-static struct kobj_attribute zap_reset_attribute =__ATTR(reset_stats, 0220, NULL,
-                                                   reset_zap_stats);
+// static struct kobj_attribute zap_reset_attribute =__ATTR(reset_stats, 0220, NULL,
+//                                                    reset_zap_stats);
 
 /*
  * Initialize the bio context
@@ -73,9 +73,10 @@ inline void dmzap_bio_endio(struct bio *bio, blk_status_t status)
 /*
  * Get the sequential write pointer (sector)
  */
-sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap)
+sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap, int wp_no)
 {	
-	return dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->wp;
+	if(wp_no == 0) return dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->wp;
+	else return dmzap->dmzap_zones[dmzap->dmzap_zone_wp_1].zone->wp;
 }
 
 //TODO is this nessesary?
@@ -152,7 +153,7 @@ int dmzap_zones_init(struct dmzap_target *dmzap)
 		zone->len = dev->zone_nr_sectors;
 		zone->type = BLK_ZONE_TYPE_SEQWRITE_REQ;
 		zone->cond = BLK_ZONE_COND_EMPTY;
-		zone->capacity = dev->zone_nr_sectors; //TODO ZNS capacity: the capacity of the backing zone has to be set individually ?
+		zone->capacity = dev->zone_nr_sectors / 2048 * 1077; //TODO ZNS capacity: the capacity of the backing zone has to be set individually ?
 
 
 		dmzap->dmzap_zones[i].zone = zone;
@@ -200,6 +201,7 @@ int dmzap_zones_init(struct dmzap_target *dmzap)
 	}
 
 	dmzap->dmzap_zone_wp = 0;
+	dmzap->dmzap_zone_wp_1 = 1;
 	dmzap->debug_int = 0;
 
 	return 0;
@@ -304,7 +306,6 @@ int dmzap_handle_bio(struct dmzap_target *dmzap,
 		mutex_lock(&dmzap->map.map_lock);
 		ret = dmzap_conv_write(dmzap, bio);
 		mutex_unlock(&dmzap->map.map_lock);
-
 		break;
 	case REQ_OP_DISCARD:
 	case REQ_OP_WRITE_ZEROES:
@@ -814,7 +815,9 @@ static int dmzap_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		     (unsigned long long)dmz_sect2blk(ti->len));
 
 	dmz_dev_info(dev, "Write pointer position: %llu",
-			(unsigned long long)dmzap_get_seq_wp(dmzap));
+			(unsigned long long)dmzap_get_seq_wp(dmzap, 0));
+	dmz_dev_info(dev, "Write pointer 1 position: %llu",
+			(unsigned long long)dmzap_get_seq_wp(dmzap, 1));
 
 	dmz_dev_info(dev, "Victim selection method: %d",
 			dmzap->victim_selection_method);
@@ -843,19 +846,20 @@ static int dmzap_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	dmzap->dev_capacity,
 	dmzap->q_cap);
 
-	zap_stat_kobject = kobject_create_and_add("zap",
-                                                 kernel_kobj);
+	// zap_stat_kobject = kobject_create_and_add("zap", kernel_kobj);
 	
 	dmzap_ptr = dmzap;
-        if(!zap_stat_kobject)
-                return -ENOMEM;
+        // if(!zap_stat_kobject)
+        //         return -ENOMEM;
 
-        error = sysfs_create_file(zap_stat_kobject, &zap_reset_attribute.attr);
-        if (error) {
-                pr_debug("failed to create the reset_stats file in /sys/kernel/zap \n");
-        }
+        // error = sysfs_create_file(zap_stat_kobject, &zap_reset_attribute.attr);
+        // if (error) {
+        //         pr_debug("failed to create the reset_stats file in /sys/kernel/zap \n");
+        // }
 
 	mutex_init(&heap_increase_lock);
+
+	atomic64_set(&dmzap->write_cnt, 0);
 
 	return 0;
 
@@ -873,7 +877,7 @@ err_dev:
 err:
 	kfree(dmzap);
 
-	kobject_put(zap_stat_kobject);
+	// kobject_put(zap_stat_kobject);
 
 	return ret;
 }
@@ -894,7 +898,7 @@ static void dmzap_dtr(struct dm_target *ti)
 	dmzap_map_free(dmzap);
 	dmzap_put_zoned_device(ti);
 	mutex_destroy(&dmzap->chunk_lock);
-	kobject_put(zap_stat_kobject);
+	// kobject_put(zap_stat_kobject);
 	kfree(dmzap);
 }
 
@@ -981,7 +985,7 @@ static struct target_type dmzap_type = {
 	.version	 = {1, 0, 0},
 	.features	 = DM_TARGET_MIXED_ZONED_MODEL,
 	.module		 = THIS_MODULE,
-	.report_zones= dmzap_report_zones,
+	// .report_zones	 = dmzap_report_zones,
 	.ctr		 = dmzap_ctr,
 	.dtr		 = dmzap_dtr,
 	.map		 = dmzap_map,

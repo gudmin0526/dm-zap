@@ -69,10 +69,68 @@ void dmzap_update_seq_wp(struct dmzap_target *dmzap, sector_t bio_sectors)
 		for (i = 1; i < dmzap->nr_internal_zones; i++) {
 			current_zone = (i + dmzap->dmzap_zone_wp) % dmzap->nr_internal_zones;
 			zone = dmzap->dmzap_zones[current_zone].zone;
-			if (zone->cond < BLK_ZONE_COND_CLOSED
+			if (zone->cond == BLK_ZONE_COND_EMPTY
 				&& dmzap->dmzap_zones[current_zone].type == DMZAP_RAND) {
 				dmzap->dmzap_zone_wp = dmzap->dmzap_zones[current_zone].seq;
 				dmzap->dmzap_zones[dmzap->dmzap_zone_wp].state = DMZAP_OPENED;
+				dmzap->nr_clean_zones--;
+				dmzap->nr_opened_zones++;
+				return;
+			}
+		}
+		dmz_dev_info(dmzap->dev, "Device is completely full.\n");
+	}
+}
+
+/*
+ *	Updates the current zones wp and if nessesary the dmzap_zone_wp
+ */
+void dmzap_update_seq_wp_1(struct dmzap_target *dmzap, sector_t bio_sectors)
+{
+	u32 i = 0;
+	u32 current_zone = 0;
+	struct blk_zone	*zone = dmzap->dmzap_zones[dmzap->dmzap_zone_wp_1].zone;
+
+	zone->wp += bio_sectors;
+	zone->cond = BLK_ZONE_COND_IMP_OPEN;
+
+	if (zone->wp >= zone->start + zone->capacity) { //TODO ZNS capacity: if (zone->wp >= zone->start + zone->capacity) {
+		//TODO figure out how to finish the zone.
+		// ret = blkdev_zone_mgmt(dmzap->dev->bdev, REQ_OP_ZONE_FINISH,
+		//  					 zone->start, dmzap->dev->zone_nr_sectors, GFP_NOIO);
+		// if(ret){
+		// 	dmz_dev_err(dmzap->dev, "Zone finish failed! Return value: %d", ret);
+		// 	return;
+		// }
+		zone->cond = BLK_ZONE_COND_FULL;
+		dmzap->reclaim->nr_free_zones--;
+		dmzap_calc_p_free_zone(dmzap);
+		trace_printk("-Number of free zones %lu. (total %u)\n", dmzap->reclaim->nr_free_zones, dmzap->nr_internal_zones);
+
+		if(dmzap->victim_selection_method == DMZAP_FAST_CB){
+			dmzap_assign_zone_to_reclaim_class(dmzap, &dmzap->dmzap_zones[dmzap->dmzap_zone_wp_1]);
+		}
+
+		if(dmzap->victim_selection_method == DMZAP_CONST_CB || dmzap->victim_selection_method == DMZAP_CONST_GREEDY){
+			list_add_tail(&(dmzap->dmzap_zones[dmzap->dmzap_zone_wp_1].num_invalid_blocks_link), &(dmzap->num_invalid_blocks_lists[dmzap->dmzap_zones[dmzap->dmzap_zone_wp_1].nr_invalid_blocks]));
+
+		}
+
+		if(dmzap->victim_selection_method == DMZAP_FEGC){
+			dmzap_heap_insert(dmzap->fegc_heaps[dmzap->dmzap_zones[dmzap->dmzap_zone_wp_1].nr_invalid_blocks], &dmzap->dmzap_zones[dmzap->dmzap_zone_wp_1]);
+		}
+		if(dmzap->victim_selection_method == DMZAP_FAGCPLUS){
+			dmzap_heap_insert(&dmzap->fagc_heap, &dmzap->dmzap_zones[dmzap->dmzap_zone_wp_1]);
+		}
+		
+		/* Find new zone to write to*/
+		for (i = 1; i < dmzap->nr_internal_zones; i++) {
+			current_zone = (i + dmzap->dmzap_zone_wp_1) % dmzap->nr_internal_zones;
+			zone = dmzap->dmzap_zones[current_zone].zone;
+			if (zone->cond == BLK_ZONE_COND_EMPTY
+				&& dmzap->dmzap_zones[current_zone].type == DMZAP_RAND) {
+				dmzap->dmzap_zone_wp_1 = dmzap->dmzap_zones[current_zone].seq;
+				dmzap->dmzap_zones[dmzap->dmzap_zone_wp_1].state = DMZAP_OPENED;
 				dmzap->nr_clean_zones--;
 				dmzap->nr_opened_zones++;
 				return;
@@ -99,16 +157,18 @@ static inline void dmzap_bio_end_wr(struct bio *bio,
 
 		ret = dmzap_map_update(dmzap,
 			dmz_sect2blk(bioctx->user_sec),
-			dmz_sect2blk(dmzap_get_seq_wp(dmzap)),
+			dmz_sect2blk(dmzap_get_seq_wp(dmzap, bioctx->wp_no)),
 			dmz_bio_blocks(bio));
 
-		dmzap_update_seq_wp(dmzap, bio_sectors(bio));
+		if(bioctx->wp_no == 0) dmzap_update_seq_wp(dmzap, bio_sectors(bio));
+		else dmzap_update_seq_wp_1(dmzap, bio_sectors(bio));
 
 		if(ret)
 			dmz_dev_err(dmzap->dev, "endio mapping failed!");
 	}
 
-	clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
+	if(bioctx->wp_no == 0) clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
+	else clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap_1);
 }
 
 
@@ -160,7 +220,7 @@ static void dmzap_clone_endio(struct bio *clone)
  * original target BIO.
  */
 static int dmzap_submit_bio(struct dmzap_target *dmzap,
-				sector_t sector, struct bio *bio)
+				sector_t sector, struct bio *bio, int wp_no)
 {
 	struct dmzap_bioctx *bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
 	struct bio *clone;
@@ -179,6 +239,7 @@ static int dmzap_submit_bio(struct dmzap_target *dmzap,
 	//bio_advance(bio, clone->bi_iter.bi_size);
 
 	refcount_inc(&bioctx->ref);
+	bioctx->wp_no = wp_no;
 	submit_bio_noacct(clone);
 
 	switch (bio_op(bio)) {
@@ -186,8 +247,14 @@ static int dmzap_submit_bio(struct dmzap_target *dmzap,
 		//maybe this section is not needed
 		break;
 	case REQ_OP_WRITE:
+		if(wp_no == 0) {
 			dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone_age = jiffies;
 			dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->cond = BLK_ZONE_COND_IMP_OPEN;
+		}
+		else {
+			dmzap->dmzap_zones[dmzap->dmzap_zone_wp_1].zone_age = jiffies;
+			dmzap->dmzap_zones[dmzap->dmzap_zone_wp_1].zone->cond = BLK_ZONE_COND_IMP_OPEN;
+		}
 		break;
 	}
 
@@ -219,7 +286,7 @@ int dmzap_conv_read(struct dmzap_target *dmzap, struct bio *bio)
 		} else {
 			//dmzap_get_bio(bio);
 
-			ret = dmzap_submit_bio(dmzap, dmz_blk2sect(backing), bio);
+			ret = dmzap_submit_bio(dmzap, dmz_blk2sect(backing), bio, 0);
 			if (ret)
 				return DM_MAPIO_KILL;
 		}
@@ -237,19 +304,39 @@ int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 {
 	int ret;
 
-	/* We can only have one outstanding write at a time */
-	while(test_and_set_bit_lock(DMZAP_WR_OUTSTANDING,
-				&dmzap->write_bitmap))
+	while (true) {
+		if(test_and_set_bit_lock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap)) {
+			if(test_and_set_bit_lock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap_1))
 				io_schedule();
+			else {
+				if (dmzap->dmzap_zones[dmzap->dmzap_zone_wp_1].zone->cond == BLK_ZONE_COND_READONLY)
+					return -EROFS;
 
+				if(WRITE_AMP_STAT) atomic64_add(bio_sectors(bio), &dmzap->write_cnt);
+				
+				ret = dmzap_submit_bio(dmzap, dmzap_get_seq_wp(dmzap, 1), bio, 1);
+				if (ret) {
+					/* Out of memory, try again later */
+					clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap_1);
+					return ret;
+				}
+				break;
+			}
+		}
+		else {
 			if (dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->cond == BLK_ZONE_COND_READONLY)
 				return -EROFS;
 
-	ret = dmzap_submit_bio(dmzap, dmzap_get_seq_wp(dmzap), bio);
+			if(WRITE_AMP_STAT) atomic64_add(bio_sectors(bio), &dmzap->write_cnt);
+			
+			ret = dmzap_submit_bio(dmzap, dmzap_get_seq_wp(dmzap, 0), bio, 0);
 			if (ret) {
 				/* Out of memory, try again later */
 				clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 				return ret;
+			}
+			break;
+		}
 	}
 	
 	return DM_MAPIO_SUBMITTED;
