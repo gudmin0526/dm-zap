@@ -69,7 +69,7 @@ void dmzap_update_seq_wp(struct dmzap_target *dmzap, sector_t bio_sectors)
 		for (i = 1; i < dmzap->nr_internal_zones; i++) {
 			current_zone = (i + dmzap->dmzap_zone_wp) % dmzap->nr_internal_zones;
 			zone = dmzap->dmzap_zones[current_zone].zone;
-			if (zone->cond == BLK_ZONE_COND_EMPTY
+			if (zone->cond < BLK_ZONE_COND_CLOSED
 				&& dmzap->dmzap_zones[current_zone].type == DMZAP_RAND) {
 				dmzap->dmzap_zone_wp = dmzap->dmzap_zones[current_zone].seq;
 				dmzap->dmzap_zones[dmzap->dmzap_zone_wp].state = DMZAP_OPENED;
