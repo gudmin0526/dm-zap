@@ -923,7 +923,7 @@ static void dmzap_io_hints(struct dm_target *ti, struct queue_limits *limits)
 	limits->max_sectors = zone_sectors;
 
 	/* We are exposing a host-managed zoned block device */
-	limits->zoned = BLK_ZONED_HM;
+	limits->zoned = BLK_ZONED_NONE;
 }
 
 /*
@@ -979,7 +979,7 @@ static int dmzap_iterate_devices(struct dm_target *ti,
 static struct target_type dmzap_type = {
 	.name		 = "zap",
 	.version	 = {1, 0, 0},
-	.features	 = DM_TARGET_ZONED_HM,
+	.features	 = DM_TARGET_MIXED_ZONED_MODEL,
 	.module		 = THIS_MODULE,
 	.report_zones	 = dmzap_report_zones,
 	.ctr		 = dmzap_ctr,
