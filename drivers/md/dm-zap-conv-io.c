@@ -14,10 +14,16 @@ void dmzap_update_seq_wp(struct dmzap_target *dmzap, sector_t bio_sectors)
 {
 	u32 i = 0;
 	u32 current_zone = 0;
+	u64 old_wp;
 	struct blk_zone	*zone = dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone;
 
+	old_wp = zone->wp;
 	zone->wp += bio_sectors;
 	zone->cond = BLK_ZONE_COND_IMP_OPEN;
+
+	// [로그] 현재 사용 중인 zone과 wp 업데이트 확인
+	printk(KERN_INFO "dmzap: Zone[%u] WP updated: %llu -> %llu (+%llu sectors)\n",
+	       dmzap->dmzap_zone_wp, old_wp, zone->wp, (u64)bio_sectors);
 
 	if (zone->wp >= zone->start + zone->len) { //TODO ZNS capacity: if (zone->wp >= zone->start + zone->capacity) {
 		//TODO figure out how to finish the zone.
