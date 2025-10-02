@@ -27,7 +27,7 @@ EXCLUDE_PATTERNS       = *mod.c
 ENABLED_SECTIONS       =
 
 ENABLE_PREPROCESSING   = YES
-MACRO_EXPANSION        = YES
+MACRO_EXPANSION        = NO
 EXPAND_ONLY_PREDEF     = NO
 PREDEFINED             = __KERNEL__=1 \
                          __inline__=inline \
@@ -35,10 +35,6 @@ PREDEFINED             = __KERNEL__=1 \
                          likely(x)=x \
                          unlikely(x)=x
 
-INCLUDE_PATH           = include \
-                         include/uapi \
-                         arch/x86/include \
-                         arch/x86/include/uapi \
-                         drivers/md
+INCLUDE_PATH           = drivers/md
 STRIP_FROM_PATH        = .
 

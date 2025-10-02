@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['_5f_5fattribute_5f_5f_67',['__attribute__',['../dm-zap-heap_8c.html#af5d5ec66bcc5e7da13b40b4263538841',1,'__attribute__((__gnu_inline__)):&#160;dm-zap-heap.c'],['../dm-zap-reclaim_8c.html#af5d5ec66bcc5e7da13b40b4263538841',1,'__attribute__((__gnu_inline__)):&#160;dm-zap-reclaim.c']]]
+  ['assert_5fheap_5fis_5fok_118',['assert_heap_is_ok',['../dm-zap-heap_8c.html#aad1aabfd14cc3bac117e93a678764421',1,'dm-zap-heap.c']]],
+  ['assert_5fheap_5fok_119',['assert_heap_ok',['../dm-zap-heap_8c.html#a5c530846d247ed3d76a49f09d110f6ef',1,'dm-zap-heap.c']]]
 ];

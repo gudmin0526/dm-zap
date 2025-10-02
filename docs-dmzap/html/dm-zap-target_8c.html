@@ -65,21 +65,1474 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">dm-zap-target.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;dm-zap.h&quot;</code><br />
 <code>#include &lt;linux/module.h&gt;</code><br />
+<code>#include &lt;linux/kobject.h&gt;</code><br />
+<code>#include &lt;linux/sysfs.h&gt;</code><br />
+<code>#include &lt;linux/init.h&gt;</code><br />
+<code>#include &lt;linux/fs.h&gt;</code><br />
+<code>#include &lt;linux/string.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for dm-zap-target.c:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c__incl.svg" width="10912" height="142"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c__incl.svg" width="858" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
 <p><a href="dm-zap-target_8c_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:ae1752674fa10af5bc602da5a55dcec40"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#ae1752674fa10af5bc602da5a55dcec40">DMZAP_MIN_BIOS</a>&#160;&#160;&#160;8192</td></tr>
+<tr class="separator:ae1752674fa10af5bc602da5a55dcec40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a47c1a9c232c70fbaae5f464da8241373"><td class="memItemLeft" align="right" valign="top">static ssize_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a47c1a9c232c70fbaae5f464da8241373">reset_zap_stats</a> (struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count)</td></tr>
+<tr class="separator:a47c1a9c232c70fbaae5f464da8241373"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2310f0fec1559dfa36cc12f76d9c426c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a2310f0fec1559dfa36cc12f76d9c426c">dmzap_init_bioctx</a> (struct dmzap_target *dmzap, struct bio *bio)</td></tr>
+<tr class="separator:a2310f0fec1559dfa36cc12f76d9c426c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37a4fefdb9df57c7c1374e7abcd67350"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a37a4fefdb9df57c7c1374e7abcd67350">dmzap_bio_endio</a> (struct bio *bio, blk_status_t status)</td></tr>
+<tr class="separator:a37a4fefdb9df57c7c1374e7abcd67350"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa786e62327b400a3298ebecfef66a50"><td class="memItemLeft" align="right" valign="top">sector_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#aaa786e62327b400a3298ebecfef66a50">dmzap_get_seq_wp</a> (struct dmzap_target *dmzap)</td></tr>
+<tr class="separator:aaa786e62327b400a3298ebecfef66a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa52a2c8bb5bcc5f8d3f03de525fc2c24"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#aa52a2c8bb5bcc5f8d3f03de525fc2c24">dmzap_report_zones</a> (struct dm_target *ti, struct dm_report_zones_args *args, unsigned int nr_zones)</td></tr>
+<tr class="separator:aa52a2c8bb5bcc5f8d3f03de525fc2c24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a278515cfcd025f17a96417e43f3db18a"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a278515cfcd025f17a96417e43f3db18a">dmzap_init_zone</a> (struct blk_zone *blkz, unsigned int idx, void *data)</td></tr>
+<tr class="separator:a278515cfcd025f17a96417e43f3db18a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c72a81958aaf178f3e00e39f5cd47eb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a6c72a81958aaf178f3e00e39f5cd47eb">dmzap_zones_init</a> (struct dmzap_target *dmzap)</td></tr>
+<tr class="separator:a6c72a81958aaf178f3e00e39f5cd47eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adac52f0c318e389a9299e6e735146f1b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#adac52f0c318e389a9299e6e735146f1b">dmzap_zones_free</a> (struct dmzap_target *dmzap)</td></tr>
+<tr class="separator:adac52f0c318e389a9299e6e735146f1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a673c838854f7413a6e2b7aef1351cfb9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a673c838854f7413a6e2b7aef1351cfb9">dmzap_geometry_init</a> (struct dm_target *ti)</td></tr>
+<tr class="separator:a673c838854f7413a6e2b7aef1351cfb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac361600a0ef24d3abe058b76ee4a7c43"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#ac361600a0ef24d3abe058b76ee4a7c43">dmzap_handle_bio</a> (struct dmzap_target *dmzap, struct dmzap_chunk_work *cw, struct bio *bio)</td></tr>
+<tr class="separator:ac361600a0ef24d3abe058b76ee4a7c43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acab4a77aede7e4b123b9f311c788662c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#acab4a77aede7e4b123b9f311c788662c">dmzap_get_chunk_work</a> (struct dmzap_chunk_work *cw)</td></tr>
+<tr class="separator:acab4a77aede7e4b123b9f311c788662c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad13adf339e55f703d1843f2935ac10ce"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#ad13adf339e55f703d1843f2935ac10ce">dmzap_put_chunk_work</a> (struct dmzap_chunk_work *cw)</td></tr>
+<tr class="separator:ad13adf339e55f703d1843f2935ac10ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b7bb265a5ab0376e0b178ec8ca02fc2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a8b7bb265a5ab0376e0b178ec8ca02fc2">dmzap_chunk_work_</a> (struct work_struct *work)</td></tr>
+<tr class="separator:a8b7bb265a5ab0376e0b178ec8ca02fc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6114ff532cfc716a191ca365d535288"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#ac6114ff532cfc716a191ca365d535288">dmzap_flush_work</a> (struct work_struct *work)</td></tr>
+<tr class="separator:ac6114ff532cfc716a191ca365d535288"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91bb5f12809f481c64891e1a3d43c22e"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a91bb5f12809f481c64891e1a3d43c22e">dmzap_queue_chunk_work</a> (struct dmzap_target *dmzap, struct bio *bio)</td></tr>
+<tr class="separator:a91bb5f12809f481c64891e1a3d43c22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a902c8a19fa6f78d0b655379ebf3544f8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a902c8a19fa6f78d0b655379ebf3544f8">dmzap_bdev_is_dying</a> (struct dmz_dev *dmz_dev)</td></tr>
+<tr class="separator:a902c8a19fa6f78d0b655379ebf3544f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6762b2612cfb1a541d2fecfa420890a9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a6762b2612cfb1a541d2fecfa420890a9">dmzap_check_bdev</a> (struct dmz_dev *dmz_dev)</td></tr>
+<tr class="separator:a6762b2612cfb1a541d2fecfa420890a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43a56808aed8f10e2c0b5c040e478b41"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a43a56808aed8f10e2c0b5c040e478b41">dmzap_map</a> (struct dm_target *ti, struct bio *bio)</td></tr>
+<tr class="separator:a43a56808aed8f10e2c0b5c040e478b41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae65a9b9991fe1f7953bde80dc09bb657"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#ae65a9b9991fe1f7953bde80dc09bb657">dmzap_get_zoned_device</a> (struct dm_target *ti, char *path)</td></tr>
+<tr class="separator:ae65a9b9991fe1f7953bde80dc09bb657"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9a7ed03498f52d2fa45bae612be84e1"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#ae9a7ed03498f52d2fa45bae612be84e1">dmzap_put_zoned_device</a> (struct dm_target *ti)</td></tr>
+<tr class="separator:ae9a7ed03498f52d2fa45bae612be84e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a533fd7adf57bc9829cbca54a8b3764ad"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a533fd7adf57bc9829cbca54a8b3764ad">dmzap_ctr</a> (struct dm_target *ti, unsigned int argc, char **argv)</td></tr>
+<tr class="separator:a533fd7adf57bc9829cbca54a8b3764ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1b8e145255104198efd72bdbbadee99"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#ad1b8e145255104198efd72bdbbadee99">dmzap_dtr</a> (struct dm_target *ti)</td></tr>
+<tr class="separator:ad1b8e145255104198efd72bdbbadee99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e706499661443f756b8def359f3786b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a4e706499661443f756b8def359f3786b">dmzap_io_hints</a> (struct dm_target *ti, struct queue_limits *limits)</td></tr>
+<tr class="separator:a4e706499661443f756b8def359f3786b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95fde511b57baa1a2a46512b0b9008fa"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a95fde511b57baa1a2a46512b0b9008fa">dmzap_prepare_ioctl</a> (struct dm_target *ti, struct block_device **bdev)</td></tr>
+<tr class="separator:a95fde511b57baa1a2a46512b0b9008fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcc5bdcf5a589f63f1280663c97dfcd8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#adcc5bdcf5a589f63f1280663c97dfcd8">dmzap_suspend</a> (struct dm_target *ti)</td></tr>
+<tr class="separator:adcc5bdcf5a589f63f1280663c97dfcd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96dcb7b86db6cad2d86ab07a4c45cdb8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a96dcb7b86db6cad2d86ab07a4c45cdb8">dmzap_resume</a> (struct dm_target *ti)</td></tr>
+<tr class="separator:a96dcb7b86db6cad2d86ab07a4c45cdb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56877b53520896960aaf7ffae52af29b"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a56877b53520896960aaf7ffae52af29b">dmzap_iterate_devices</a> (struct dm_target *ti, iterate_devices_callout_fn fn, void *data)</td></tr>
+<tr class="separator:a56877b53520896960aaf7ffae52af29b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ff83b6216ff28962cdfac95a10096a1"><td class="memItemLeft" align="right" valign="top">static int __init&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a7ff83b6216ff28962cdfac95a10096a1">dmzap_init</a> (void)</td></tr>
+<tr class="separator:a7ff83b6216ff28962cdfac95a10096a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29f082d8b3ee5a075a0b3c030a8bad46"><td class="memItemLeft" align="right" valign="top">static void __exit&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a29f082d8b3ee5a075a0b3c030a8bad46">dmzap_exit</a> (void)</td></tr>
+<tr class="separator:a29f082d8b3ee5a075a0b3c030a8bad46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89e29dd04fd5ba0d2ffc1172858e9c1c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a89e29dd04fd5ba0d2ffc1172858e9c1c">module_init</a> (<a class="el" href="dm-zap-target_8c.html#a7ff83b6216ff28962cdfac95a10096a1">dmzap_init</a>)</td></tr>
+<tr class="separator:a89e29dd04fd5ba0d2ffc1172858e9c1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad05d809fed53f9dcacbb3e208d37db31"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#ad05d809fed53f9dcacbb3e208d37db31">module_exit</a> (<a class="el" href="dm-zap-target_8c.html#a29f082d8b3ee5a075a0b3c030a8bad46">dmzap_exit</a>)</td></tr>
+<tr class="separator:ad05d809fed53f9dcacbb3e208d37db31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a964b11f0a27f9bda0977f2d64f67f05f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a964b11f0a27f9bda0977f2d64f67f05f">MODULE_DESCRIPTION</a> (DM_NAME &quot; target&quot;)</td></tr>
+<tr class="separator:a964b11f0a27f9bda0977f2d64f67f05f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3192be461976197181de6535926da519"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a3192be461976197181de6535926da519">MODULE_AUTHOR</a> (&quot;Hans Holmberg &lt;hans.holmberg@wdc.com&gt;&quot;)</td></tr>
+<tr class="separator:a3192be461976197181de6535926da519"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad94b36675e7eb067ea3ce6ff9e244a44"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#ad94b36675e7eb067ea3ce6ff9e244a44">MODULE_LICENSE</a> (&quot;GPL&quot;)</td></tr>
+<tr class="separator:ad94b36675e7eb067ea3ce6ff9e244a44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a4f14db095cdb244cade2a4d454d4aea9"><td class="memItemLeft" align="right" valign="top">static struct kobject *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a4f14db095cdb244cade2a4d454d4aea9">zap_stat_kobject</a></td></tr>
+<tr class="separator:a4f14db095cdb244cade2a4d454d4aea9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9780eec8b18ff0a20bbe665b27f4225"><td class="memItemLeft" align="right" valign="top">struct dmzap_target *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#ae9780eec8b18ff0a20bbe665b27f4225">dmzap_ptr</a></td></tr>
+<tr class="separator:ae9780eec8b18ff0a20bbe665b27f4225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6707f627a7fa511b048ed66b8717269"><td class="memItemLeft" align="right" valign="top">struct mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#ab6707f627a7fa511b048ed66b8717269">heap_increase_lock</a></td></tr>
+<tr class="separator:ab6707f627a7fa511b048ed66b8717269"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1503289ce0eb9a93ce671401ef7034ed"><td class="memItemLeft" align="right" valign="top">static struct kobj_attribute&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#a1503289ce0eb9a93ce671401ef7034ed">zap_reset_attribute</a></td></tr>
+<tr class="separator:a1503289ce0eb9a93ce671401ef7034ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8f236b39eab60d4d7ce655091acf98a"><td class="memItemLeft" align="right" valign="top">static struct target_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dm-zap-target_8c.html#aa8f236b39eab60d4d7ce655091acf98a">dmzap_type</a></td></tr>
+<tr class="separator:aa8f236b39eab60d4d7ce655091acf98a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="ae1752674fa10af5bc602da5a55dcec40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1752674fa10af5bc602da5a55dcec40">&#9670;&nbsp;</a></span>DMZAP_MIN_BIOS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DMZAP_MIN_BIOS&#160;&#160;&#160;8192</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00018">18</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a902c8a19fa6f78d0b655379ebf3544f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a902c8a19fa6f78d0b655379ebf3544f8">&#9670;&nbsp;</a></span>dmzap_bdev_is_dying()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool dmzap_bdev_is_dying </td>
+          <td>(</td>
+          <td class="paramtype">struct dmz_dev *&#160;</td>
+          <td class="paramname"><em>dmz_dev</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00461">461</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a902c8a19fa6f78d0b655379ebf3544f8_cgraph.svg" width="376" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a902c8a19fa6f78d0b655379ebf3544f8_icgraph.svg" width="2092" height="531"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a37a4fefdb9df57c7c1374e7abcd67350"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37a4fefdb9df57c7c1374e7abcd67350">&#9670;&nbsp;</a></span>dmzap_bio_endio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dmzap_bio_endio </td>
+          <td>(</td>
+          <td class="paramtype">struct bio *&#160;</td>
+          <td class="paramname"><em>bio</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">blk_status_t&#160;</td>
+          <td class="paramname"><em>status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00051">51</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a37a4fefdb9df57c7c1374e7abcd67350_icgraph.svg" width="2731" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a6762b2612cfb1a541d2fecfa420890a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6762b2612cfb1a541d2fecfa420890a9">&#9670;&nbsp;</a></span>dmzap_check_bdev()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool dmzap_check_bdev </td>
+          <td>(</td>
+          <td class="paramtype">struct dmz_dev *&#160;</td>
+          <td class="paramname"><em>dmz_dev</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00483">483</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a6762b2612cfb1a541d2fecfa420890a9_cgraph.svg" width="376" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a6762b2612cfb1a541d2fecfa420890a9_icgraph.svg" width="2243" height="566"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a8b7bb265a5ab0376e0b178ec8ca02fc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b7bb265a5ab0376e0b178ec8ca02fc2">&#9670;&nbsp;</a></span>dmzap_chunk_work_()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmzap_chunk_work_ </td>
+          <td>(</td>
+          <td class="paramtype">struct work_struct *&#160;</td>
+          <td class="paramname"><em>work</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00363">363</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a8b7bb265a5ab0376e0b178ec8ca02fc2_cgraph.svg" width="2334" height="822"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a8b7bb265a5ab0376e0b178ec8ca02fc2_icgraph.svg" width="1830" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a533fd7adf57bc9829cbca54a8b3764ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a533fd7adf57bc9829cbca54a8b3764ad">&#9670;&nbsp;</a></span>dmzap_ctr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int dmzap_ctr </td>
+          <td>(</td>
+          <td class="paramtype">struct dm_target *&#160;</td>
+          <td class="paramname"><em>ti</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>argc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **&#160;</td>
+          <td class="paramname"><em>argv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00642">642</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a533fd7adf57bc9829cbca54a8b3764ad_cgraph.svg" width="4164" height="1320"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ad1b8e145255104198efd72bdbbadee99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1b8e145255104198efd72bdbbadee99">&#9670;&nbsp;</a></span>dmzap_dtr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmzap_dtr </td>
+          <td>(</td>
+          <td class="paramtype">struct dm_target *&#160;</td>
+          <td class="paramname"><em>ti</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00887">887</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_ad1b8e145255104198efd72bdbbadee99_cgraph.svg" width="3140" height="686"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a29f082d8b3ee5a075a0b3c030a8bad46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29f082d8b3ee5a075a0b3c030a8bad46">&#9670;&nbsp;</a></span>dmzap_exit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void __exit dmzap_exit </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l01003">1003</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+
+</div>
+</div>
+<a id="ac6114ff532cfc716a191ca365d535288"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6114ff532cfc716a191ca365d535288">&#9670;&nbsp;</a></span>dmzap_flush_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmzap_flush_work </td>
+          <td>(</td>
+          <td class="paramtype">struct work_struct *&#160;</td>
+          <td class="paramname"><em>work</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00388">388</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_ac6114ff532cfc716a191ca365d535288_cgraph.svg" width="338" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_ac6114ff532cfc716a191ca365d535288_icgraph.svg" width="292" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a673c838854f7413a6e2b7aef1351cfb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a673c838854f7413a6e2b7aef1351cfb9">&#9670;&nbsp;</a></span>dmzap_geometry_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int dmzap_geometry_init </td>
+          <td>(</td>
+          <td class="paramtype">struct dm_target *&#160;</td>
+          <td class="paramname"><em>ti</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00234">234</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a673c838854f7413a6e2b7aef1351cfb9_icgraph.svg" width="314" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="acab4a77aede7e4b123b9f311c788662c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acab4a77aede7e4b123b9f311c788662c">&#9670;&nbsp;</a></span>dmzap_get_chunk_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmzap_get_chunk_work </td>
+          <td>(</td>
+          <td class="paramtype">struct dmzap_chunk_work *&#160;</td>
+          <td class="paramname"><em>cw</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00342">342</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_acab4a77aede7e4b123b9f311c788662c_icgraph.svg" width="2056" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="aaa786e62327b400a3298ebecfef66a50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa786e62327b400a3298ebecfef66a50">&#9670;&nbsp;</a></span>dmzap_get_seq_wp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">sector_t dmzap_get_seq_wp </td>
+          <td>(</td>
+          <td class="paramtype">struct dmzap_target *&#160;</td>
+          <td class="paramname"><em>dmzap</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00076">76</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_aaa786e62327b400a3298ebecfef66a50_icgraph.svg" width="2940" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ae65a9b9991fe1f7953bde80dc09bb657"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae65a9b9991fe1f7953bde80dc09bb657">&#9670;&nbsp;</a></span>dmzap_get_zoned_device()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int dmzap_get_zoned_device </td>
+          <td>(</td>
+          <td class="paramtype">struct dm_target *&#160;</td>
+          <td class="paramname"><em>ti</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00568">568</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_ae65a9b9991fe1f7953bde80dc09bb657_icgraph.svg" width="340" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ac361600a0ef24d3abe058b76ee4a7c43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac361600a0ef24d3abe058b76ee4a7c43">&#9670;&nbsp;</a></span>dmzap_handle_bio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int dmzap_handle_bio </td>
+          <td>(</td>
+          <td class="paramtype">struct dmzap_target *&#160;</td>
+          <td class="paramname"><em>dmzap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct dmzap_chunk_work *&#160;</td>
+          <td class="paramname"><em>cw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct bio *&#160;</td>
+          <td class="paramname"><em>bio</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00274">274</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_ac361600a0ef24d3abe058b76ee4a7c43_cgraph.svg" width="2163" height="962"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_ac361600a0ef24d3abe058b76ee4a7c43_icgraph.svg" width="1968" height="430"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a7ff83b6216ff28962cdfac95a10096a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ff83b6216ff28962cdfac95a10096a1">&#9670;&nbsp;</a></span>dmzap_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int __init dmzap_init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00998">998</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+
+</div>
+</div>
+<a id="a2310f0fec1559dfa36cc12f76d9c426c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2310f0fec1559dfa36cc12f76d9c426c">&#9670;&nbsp;</a></span>dmzap_init_bioctx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmzap_init_bioctx </td>
+          <td>(</td>
+          <td class="paramtype">struct dmzap_target *&#160;</td>
+          <td class="paramname"><em>dmzap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct bio *&#160;</td>
+          <td class="paramname"><em>bio</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00038">38</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a2310f0fec1559dfa36cc12f76d9c426c_icgraph.svg" width="2019" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a278515cfcd025f17a96417e43f3db18a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a278515cfcd025f17a96417e43f3db18a">&#9670;&nbsp;</a></span>dmzap_init_zone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int dmzap_init_zone </td>
+          <td>(</td>
+          <td class="paramtype">struct blk_zone *&#160;</td>
+          <td class="paramname"><em>blkz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00102">102</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a278515cfcd025f17a96417e43f3db18a_icgraph.svg" width="468" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a4e706499661443f756b8def359f3786b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e706499661443f756b8def359f3786b">&#9670;&nbsp;</a></span>dmzap_io_hints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmzap_io_hints </td>
+          <td>(</td>
+          <td class="paramtype">struct dm_target *&#160;</td>
+          <td class="paramname"><em>ti</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct queue_limits *&#160;</td>
+          <td class="paramname"><em>limits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00907">907</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+
+</div>
+</div>
+<a id="a56877b53520896960aaf7ffae52af29b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56877b53520896960aaf7ffae52af29b">&#9670;&nbsp;</a></span>dmzap_iterate_devices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int dmzap_iterate_devices </td>
+          <td>(</td>
+          <td class="paramtype">struct dm_target *&#160;</td>
+          <td class="paramname"><em>ti</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">iterate_devices_callout_fn&#160;</td>
+          <td class="paramname"><em>fn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00971">971</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+
+</div>
+</div>
+<a id="a43a56808aed8f10e2c0b5c040e478b41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43a56808aed8f10e2c0b5c040e478b41">&#9670;&nbsp;</a></span>dmzap_map()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int dmzap_map </td>
+          <td>(</td>
+          <td class="paramtype">struct dm_target *&#160;</td>
+          <td class="paramname"><em>ti</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct bio *&#160;</td>
+          <td class="paramname"><em>bio</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00505">505</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a43a56808aed8f10e2c0b5c040e478b41_cgraph.svg" width="2704" height="686"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a43a56808aed8f10e2c0b5c040e478b41_icgraph.svg" width="1830" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a95fde511b57baa1a2a46512b0b9008fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95fde511b57baa1a2a46512b0b9008fa">&#9670;&nbsp;</a></span>dmzap_prepare_ioctl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int dmzap_prepare_ioctl </td>
+          <td>(</td>
+          <td class="paramtype">struct dm_target *&#160;</td>
+          <td class="paramname"><em>ti</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct block_device **&#160;</td>
+          <td class="paramname"><em>bdev</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00935">935</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a95fde511b57baa1a2a46512b0b9008fa_cgraph.svg" width="583" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ad13adf339e55f703d1843f2935ac10ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad13adf339e55f703d1843f2935ac10ce">&#9670;&nbsp;</a></span>dmzap_put_chunk_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmzap_put_chunk_work </td>
+          <td>(</td>
+          <td class="paramtype">struct dmzap_chunk_work *&#160;</td>
+          <td class="paramname"><em>cw</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00351">351</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_ad13adf339e55f703d1843f2935ac10ce_icgraph.svg" width="2056" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ae9a7ed03498f52d2fa45bae612be84e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9a7ed03498f52d2fa45bae612be84e1">&#9670;&nbsp;</a></span>dmzap_put_zoned_device()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmzap_put_zoned_device </td>
+          <td>(</td>
+          <td class="paramtype">struct dm_target *&#160;</td>
+          <td class="paramname"><em>ti</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00630">630</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_ae9a7ed03498f52d2fa45bae612be84e1_icgraph.svg" width="340" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a91bb5f12809f481c64891e1a3d43c22e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91bb5f12809f481c64891e1a3d43c22e">&#9670;&nbsp;</a></span>dmzap_queue_chunk_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int dmzap_queue_chunk_work </td>
+          <td>(</td>
+          <td class="paramtype">struct dmzap_target *&#160;</td>
+          <td class="paramname"><em>dmzap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct bio *&#160;</td>
+          <td class="paramname"><em>bio</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00413">413</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a91bb5f12809f481c64891e1a3d43c22e_cgraph.svg" width="2572" height="708"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a91bb5f12809f481c64891e1a3d43c22e_icgraph.svg" width="1830" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="aa52a2c8bb5bcc5f8d3f03de525fc2c24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa52a2c8bb5bcc5f8d3f03de525fc2c24">&#9670;&nbsp;</a></span>dmzap_report_zones()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int dmzap_report_zones </td>
+          <td>(</td>
+          <td class="paramtype">struct dm_target *&#160;</td>
+          <td class="paramname"><em>ti</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct dm_report_zones_args *&#160;</td>
+          <td class="paramname"><em>args</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>nr_zones</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00085">85</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+
+</div>
+</div>
+<a id="a96dcb7b86db6cad2d86ab07a4c45cdb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96dcb7b86db6cad2d86ab07a4c45cdb8">&#9670;&nbsp;</a></span>dmzap_resume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmzap_resume </td>
+          <td>(</td>
+          <td class="paramtype">struct dm_target *&#160;</td>
+          <td class="paramname"><em>ti</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00963">963</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a96dcb7b86db6cad2d86ab07a4c45cdb8_cgraph.svg" width="360" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="adcc5bdcf5a589f63f1280663c97dfcd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcc5bdcf5a589f63f1280663c97dfcd8">&#9670;&nbsp;</a></span>dmzap_suspend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmzap_suspend </td>
+          <td>(</td>
+          <td class="paramtype">struct dm_target *&#160;</td>
+          <td class="paramname"><em>ti</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00951">951</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_adcc5bdcf5a589f63f1280663c97dfcd8_cgraph.svg" width="368" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="adac52f0c318e389a9299e6e735146f1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adac52f0c318e389a9299e6e735146f1b">&#9670;&nbsp;</a></span>dmzap_zones_free()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dmzap_zones_free </td>
+          <td>(</td>
+          <td class="paramtype">struct dmzap_target *&#160;</td>
+          <td class="paramname"><em>dmzap</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00222">222</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_adac52f0c318e389a9299e6e735146f1b_icgraph.svg" width="294" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a6c72a81958aaf178f3e00e39f5cd47eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c72a81958aaf178f3e00e39f5cd47eb">&#9670;&nbsp;</a></span>dmzap_zones_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int dmzap_zones_init </td>
+          <td>(</td>
+          <td class="paramtype">struct dmzap_target *&#160;</td>
+          <td class="paramname"><em>dmzap</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00115">115</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a6c72a81958aaf178f3e00e39f5cd47eb_cgraph.svg" width="330" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="dm-zap-target_8c_a6c72a81958aaf178f3e00e39f5cd47eb_icgraph.svg" width="288" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a3192be461976197181de6535926da519"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3192be461976197181de6535926da519">&#9670;&nbsp;</a></span>MODULE_AUTHOR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MODULE_AUTHOR </td>
+          <td>(</td>
+          <td class="paramtype">&quot;Hans Holmberg &lt;hans.holmberg@wdc.com&gt;&quot;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a964b11f0a27f9bda0977f2d64f67f05f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a964b11f0a27f9bda0977f2d64f67f05f">&#9670;&nbsp;</a></span>MODULE_DESCRIPTION()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MODULE_DESCRIPTION </td>
+          <td>(</td>
+          <td class="paramtype">DM_NAME &quot; target&quot;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad05d809fed53f9dcacbb3e208d37db31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad05d809fed53f9dcacbb3e208d37db31">&#9670;&nbsp;</a></span>module_exit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">module_exit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="dm-zap-target_8c.html#a29f082d8b3ee5a075a0b3c030a8bad46">dmzap_exit</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a89e29dd04fd5ba0d2ffc1172858e9c1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89e29dd04fd5ba0d2ffc1172858e9c1c">&#9670;&nbsp;</a></span>module_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">module_init </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="dm-zap-target_8c.html#a7ff83b6216ff28962cdfac95a10096a1">dmzap_init</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad94b36675e7eb067ea3ce6ff9e244a44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad94b36675e7eb067ea3ce6ff9e244a44">&#9670;&nbsp;</a></span>MODULE_LICENSE()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MODULE_LICENSE </td>
+          <td>(</td>
+          <td class="paramtype">&quot;GPL&quot;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a47c1a9c232c70fbaae5f464da8241373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47c1a9c232c70fbaae5f464da8241373">&#9670;&nbsp;</a></span>reset_zap_stats()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static ssize_t reset_zap_stats </td>
+          <td>(</td>
+          <td class="paramtype">struct kobject *&#160;</td>
+          <td class="paramname"><em>kobj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct kobj_attribute *&#160;</td>
+          <td class="paramname"><em>attr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>buf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00024">24</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ae9780eec8b18ff0a20bbe665b27f4225"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9780eec8b18ff0a20bbe665b27f4225">&#9670;&nbsp;</a></span>dmzap_ptr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct dmzap_target* dmzap_ptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00021">21</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+
+</div>
+</div>
+<a id="aa8f236b39eab60d4d7ce655091acf98a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8f236b39eab60d4d7ce655091acf98a">&#9670;&nbsp;</a></span>dmzap_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct target_type dmzap_type</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">    .name        = <span class="stringliteral">&quot;zap&quot;</span>,</div>
+<div class="line">    .version     = {1, 0, 0},</div>
+<div class="line">    .features    = DM_TARGET_MIXED_ZONED_MODEL,</div>
+<div class="line">    .module      = THIS_MODULE,</div>
+<div class="line">    .report_zones    = <a class="code" href="dm-zap-target_8c.html#aa52a2c8bb5bcc5f8d3f03de525fc2c24">dmzap_report_zones</a>,</div>
+<div class="line">    .ctr         = <a class="code" href="dm-zap-target_8c.html#a533fd7adf57bc9829cbca54a8b3764ad">dmzap_ctr</a>,</div>
+<div class="line">    .dtr         = <a class="code" href="dm-zap-target_8c.html#ad1b8e145255104198efd72bdbbadee99">dmzap_dtr</a>,</div>
+<div class="line">    .map         = <a class="code" href="dm-zap-target_8c.html#a43a56808aed8f10e2c0b5c040e478b41">dmzap_map</a>,</div>
+<div class="line">    .io_hints    = <a class="code" href="dm-zap-target_8c.html#a4e706499661443f756b8def359f3786b">dmzap_io_hints</a>,</div>
+<div class="line">    .prepare_ioctl   = <a class="code" href="dm-zap-target_8c.html#a95fde511b57baa1a2a46512b0b9008fa">dmzap_prepare_ioctl</a>,</div>
+<div class="line">    .postsuspend     = <a class="code" href="dm-zap-target_8c.html#adcc5bdcf5a589f63f1280663c97dfcd8">dmzap_suspend</a>,</div>
+<div class="line">    .resume      = <a class="code" href="dm-zap-target_8c.html#a96dcb7b86db6cad2d86ab07a4c45cdb8">dmzap_resume</a>,</div>
+<div class="line">    .iterate_devices = <a class="code" href="dm-zap-target_8c.html#a56877b53520896960aaf7ffae52af29b">dmzap_iterate_devices</a>,</div>
+<div class="line">}</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00982">982</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+
+</div>
+</div>
+<a id="ab6707f627a7fa511b048ed66b8717269"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6707f627a7fa511b048ed66b8717269">&#9670;&nbsp;</a></span>heap_increase_lock</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct mutex heap_increase_lock</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00022">22</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+
+</div>
+</div>
+<a id="a1503289ce0eb9a93ce671401ef7034ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1503289ce0eb9a93ce671401ef7034ed">&#9670;&nbsp;</a></span>zap_reset_attribute</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct kobj_attribute zap_reset_attribute</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=__ATTR(reset_stats, 0220, NULL,</div>
+<div class="line">                                                   <a class="code" href="dm-zap-target_8c.html#a47c1a9c232c70fbaae5f464da8241373">reset_zap_stats</a>)</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00032">32</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+
+</div>
+</div>
+<a id="a4f14db095cdb244cade2a4d454d4aea9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f14db095cdb244cade2a4d454d4aea9">&#9670;&nbsp;</a></span>zap_stat_kobject</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct kobject* zap_stat_kobject</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dm-zap-target_8c_source.html#l00020">20</a> of file <a class="el" href="dm-zap-target_8c_source.html">dm-zap-target.c</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
+<div class="ttc" id="adm-zap-target_8c_html_a96dcb7b86db6cad2d86ab07a4c45cdb8"><div class="ttname"><a href="dm-zap-target_8c.html#a96dcb7b86db6cad2d86ab07a4c45cdb8">dmzap_resume</a></div><div class="ttdeci">static void dmzap_resume(struct dm_target *ti)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-target_8c_source.html#l00963">dm-zap-target.c:963</a></div></div>
+<div class="ttc" id="adm-zap-target_8c_html_a47c1a9c232c70fbaae5f464da8241373"><div class="ttname"><a href="dm-zap-target_8c.html#a47c1a9c232c70fbaae5f464da8241373">reset_zap_stats</a></div><div class="ttdeci">static ssize_t reset_zap_stats(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-target_8c_source.html#l00024">dm-zap-target.c:24</a></div></div>
+<div class="ttc" id="adm-zap-target_8c_html_a56877b53520896960aaf7ffae52af29b"><div class="ttname"><a href="dm-zap-target_8c.html#a56877b53520896960aaf7ffae52af29b">dmzap_iterate_devices</a></div><div class="ttdeci">static int dmzap_iterate_devices(struct dm_target *ti, iterate_devices_callout_fn fn, void *data)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-target_8c_source.html#l00971">dm-zap-target.c:971</a></div></div>
+<div class="ttc" id="adm-zap-target_8c_html_a43a56808aed8f10e2c0b5c040e478b41"><div class="ttname"><a href="dm-zap-target_8c.html#a43a56808aed8f10e2c0b5c040e478b41">dmzap_map</a></div><div class="ttdeci">static int dmzap_map(struct dm_target *ti, struct bio *bio)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-target_8c_source.html#l00505">dm-zap-target.c:505</a></div></div>
+<div class="ttc" id="adm-zap-target_8c_html_adcc5bdcf5a589f63f1280663c97dfcd8"><div class="ttname"><a href="dm-zap-target_8c.html#adcc5bdcf5a589f63f1280663c97dfcd8">dmzap_suspend</a></div><div class="ttdeci">static void dmzap_suspend(struct dm_target *ti)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-target_8c_source.html#l00951">dm-zap-target.c:951</a></div></div>
+<div class="ttc" id="adm-zap-target_8c_html_a95fde511b57baa1a2a46512b0b9008fa"><div class="ttname"><a href="dm-zap-target_8c.html#a95fde511b57baa1a2a46512b0b9008fa">dmzap_prepare_ioctl</a></div><div class="ttdeci">static int dmzap_prepare_ioctl(struct dm_target *ti, struct block_device **bdev)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-target_8c_source.html#l00935">dm-zap-target.c:935</a></div></div>
+<div class="ttc" id="adm-zap-target_8c_html_aa52a2c8bb5bcc5f8d3f03de525fc2c24"><div class="ttname"><a href="dm-zap-target_8c.html#aa52a2c8bb5bcc5f8d3f03de525fc2c24">dmzap_report_zones</a></div><div class="ttdeci">static int dmzap_report_zones(struct dm_target *ti, struct dm_report_zones_args *args, unsigned int nr_zones)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-target_8c_source.html#l00085">dm-zap-target.c:85</a></div></div>
+<div class="ttc" id="adm-zap-target_8c_html_a4e706499661443f756b8def359f3786b"><div class="ttname"><a href="dm-zap-target_8c.html#a4e706499661443f756b8def359f3786b">dmzap_io_hints</a></div><div class="ttdeci">static void dmzap_io_hints(struct dm_target *ti, struct queue_limits *limits)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-target_8c_source.html#l00907">dm-zap-target.c:907</a></div></div>
+<div class="ttc" id="adm-zap-target_8c_html_ad1b8e145255104198efd72bdbbadee99"><div class="ttname"><a href="dm-zap-target_8c.html#ad1b8e145255104198efd72bdbbadee99">dmzap_dtr</a></div><div class="ttdeci">static void dmzap_dtr(struct dm_target *ti)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-target_8c_source.html#l00887">dm-zap-target.c:887</a></div></div>
+<div class="ttc" id="adm-zap-target_8c_html_a533fd7adf57bc9829cbca54a8b3764ad"><div class="ttname"><a href="dm-zap-target_8c.html#a533fd7adf57bc9829cbca54a8b3764ad">dmzap_ctr</a></div><div class="ttdeci">static int dmzap_ctr(struct dm_target *ti, unsigned int argc, char **argv)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-target_8c_source.html#l00642">dm-zap-target.c:642</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

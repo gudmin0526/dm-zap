@@ -1,9 +1,10 @@
 <map id="dmzap_heap_decrease_size" name="dmzap_heap_decrease_size">
-<area shape="rect" id="node1" title=" " alt="" coords="1067,42,1271,69"/>
-<area shape="rect" id="node2" href="$dm-zap-heap_8c.html#a378782c67fae9482fc5ad9de2ed1ea3e" title=" " alt="" coords="865,42,1019,69"/>
-<area shape="rect" id="node3" href="$dm-zap-reclaim_8c.html#aedd5f3c596eab91cbc8fc13bd95a5aec" title=" " alt="" coords="622,5,798,47"/>
-<area shape="rect" id="node7" href="$dm-zap-reclaim_8c.html#aa93c03d89ea25ed686b80087ea8054be" title=" " alt="" coords="603,71,817,98"/>
-<area shape="rect" id="node4" href="$dm-zap-reclaim_8c.html#a3c52e6b4c5da86cbea57d48ee5c1d76d" title=" " alt="" coords="409,42,555,69"/>
-<area shape="rect" id="node5" href="$dm-zap-reclaim_8c.html#ac87f38c9e7971549f44e8aba65ddafcc" title=" " alt="" coords="200,42,361,69"/>
-<area shape="rect" id="node6" href="$dm-zap-reclaim_8c.html#afac8044514d6358994c4d9eb2349ef54" title=" " alt="" coords="5,42,152,69"/>
+<area shape="rect" id="node1" title=" " alt="" coords="1205,42,1409,69"/>
+<area shape="rect" id="node2" href="$dm-zap-heap_8c.html#a378782c67fae9482fc5ad9de2ed1ea3e" title=" " alt="" coords="1004,42,1157,69"/>
+<area shape="rect" id="node3" href="$dm-zap-reclaim_8c.html#aedd5f3c596eab91cbc8fc13bd95a5aec" title=" " alt="" coords="761,5,937,47"/>
+<area shape="rect" id="node8" href="$dm-zap-reclaim_8c.html#aa93c03d89ea25ed686b80087ea8054be" title=" " alt="" coords="741,71,956,98"/>
+<area shape="rect" id="node4" href="$dm-zap-reclaim_8c.html#a3c52e6b4c5da86cbea57d48ee5c1d76d" title=" " alt="" coords="548,42,693,69"/>
+<area shape="rect" id="node5" href="$dm-zap-reclaim_8c.html#ac87f38c9e7971549f44e8aba65ddafcc" title=" " alt="" coords="339,42,500,69"/>
+<area shape="rect" id="node6" href="$dm-zap-reclaim_8c.html#afac8044514d6358994c4d9eb2349ef54" title=" " alt="" coords="144,42,291,69"/>
+<area shape="rect" id="node7" href="$dm-zap-target_8c.html#a533fd7adf57bc9829cbca54a8b3764ad" title=" " alt="" coords="5,42,96,69"/>
 </map>

@@ -1,7 +1,12 @@
 <map id="dmzap_fast_cb_victim_selection" name="dmzap_fast_cb_victim_selection">
-<area shape="rect" id="node1" title=" " alt="" coords="5,93,173,135"/>
-<area shape="rect" id="node2" href="$dm-zap-reclaim_8c.html#abcc671c0e5458059ed2c5a769e7b2342" title=" " alt="" coords="226,5,399,47"/>
-<area shape="rect" id="node3" href="$dm-zap-reclaim_8c.html#ada1e1efbb5a5501000a7a1aad639107d" title=" " alt="" coords="231,71,395,98"/>
-<area shape="rect" id="node4" href="$dm-zap-reclaim_8c.html#a9c515d3ce4d889f383f47bbe4bdf9fef" title=" " alt="" coords="228,123,397,164"/>
-<area shape="rect" id="node5" href="$dm-zap-reclaim_8c.html#a3b4582f5860505ccf81e914e02b7c727" title=" " alt="" coords="221,188,404,229"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,293,173,335"/>
+<area shape="rect" id="node2" href="$dm-zap-reclaim_8c.html#ab7222d46e017866c44185898dd95506b" title=" " alt="" coords="221,217,416,243"/>
+<area shape="rect" id="node4" href="$dm-zap-reclaim_8c.html#abcc671c0e5458059ed2c5a769e7b2342" title=" " alt="" coords="464,5,637,47"/>
+<area shape="rect" id="node5" href="$dm-zap-reclaim_8c.html#ada1e1efbb5a5501000a7a1aad639107d" title=" " alt="" coords="469,305,633,331"/>
+<area shape="rect" id="node9" href="$dm-zap-reclaim_8c.html#a9c515d3ce4d889f383f47bbe4bdf9fef" title=" " alt="" coords="466,356,635,397"/>
+<area shape="rect" id="node10" href="$dm-zap-reclaim_8c.html#a3b4582f5860505ccf81e914e02b7c727" title=" " alt="" coords="227,403,410,444"/>
+<area shape="rect" id="node3" href="$dm-zap-reclaim_8c.html#a196802526565c9eeafc3aee1334c69d9" title=" " alt="" coords="511,137,590,163"/>
+<area shape="rect" id="node6" href="$dm-zap-reclaim_8c.html#a5d6e74d33d26b2dc1f932e7a025111ea" title=" " alt="" coords="465,187,636,214"/>
+<area shape="rect" id="node7" href="$dm-zap-reclaim_8c.html#a3731f00c9748741be7af5006fe21b559" title=" " alt="" coords="467,239,635,280"/>
+<area shape="rect" id="node8" href="$dm-zap-reclaim_8c.html#ae87b59374b0a3319284ea4cc0d1ca5d3" title=" " alt="" coords="466,71,635,112"/>
 </map>

@@ -1,4 +1,5 @@
 <map id="dmzap_heap_destroy" name="dmzap_heap_destroy">
-<area shape="rect" id="node1" title=" " alt="" coords="200,5,361,32"/>
-<area shape="rect" id="node2" href="$dm-zap-reclaim_8c.html#a2888a698e4a6d1fc9f7bd19396075721" title=" " alt="" coords="5,5,152,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="339,5,500,32"/>
+<area shape="rect" id="node2" href="$dm-zap-reclaim_8c.html#a2888a698e4a6d1fc9f7bd19396075721" title=" " alt="" coords="144,5,291,32"/>
+<area shape="rect" id="node3" href="$dm-zap-target_8c.html#ad1b8e145255104198efd72bdbbadee99" title=" " alt="" coords="5,5,96,32"/>
 </map>

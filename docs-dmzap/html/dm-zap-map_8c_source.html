@@ -84,7 +84,7 @@ $(function() {
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="dm-zap-map_8c.html#ab288b8683e2e74ab56ddf2994ce3c9b4">   14</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="dm-zap-map_8c.html#ab288b8683e2e74ab56ddf2994ce3c9b4">dmzap_map_init</a>(<span class="keyword">struct</span> dmzap_target *dmzap)</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;{</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">struct </span>dmzap_map *map = &amp;dmzap-&gt;map;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">struct </span><a class="code" href="dm-zap-target_8c.html#a43a56808aed8f10e2c0b5c040e478b41">dmzap_map</a> *map = &amp;dmzap-&gt;map;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    sector_t l2d_sz, i;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    l2d_sz = dmzap-&gt;dev_capacity &gt;&gt; 3;</div>
@@ -121,7 +121,7 @@ $(function() {
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
 <div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="dm-zap-map_8c.html#aca7da0a670cd2de834b497d17ba9b4b3">   51</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="dm-zap-map_8c.html#aca7da0a670cd2de834b497d17ba9b4b3">dmzap_map_free</a>(<span class="keyword">struct</span> dmzap_target *dmzap)</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;{</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">struct </span>dmzap_map *map = &amp;dmzap-&gt;map;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">struct </span><a class="code" href="dm-zap-target_8c.html#a43a56808aed8f10e2c0b5c040e478b41">dmzap_map</a> *map = &amp;dmzap-&gt;map;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    mutex_destroy(&amp;map-&gt;map_lock);</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    kvfree(map-&gt;l2d);</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    kvfree(map-&gt;d2l);</div>
@@ -132,7 +132,7 @@ $(function() {
 <div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="dm-zap-map_8c.html#af559eb37c90d70f6ec1b3a821f3c05ea">   61</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="dm-zap-map_8c.html#af559eb37c90d70f6ec1b3a821f3c05ea">dmzap_map_update</a>(<span class="keyword">struct</span> dmzap_target *dmzap,</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    sector_t user, sector_t backing, sector_t len)</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;{</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">struct </span>dmzap_map *map = &amp;dmzap-&gt;map;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">struct </span><a class="code" href="dm-zap-target_8c.html#a43a56808aed8f10e2c0b5c040e478b41">dmzap_map</a> *map = &amp;dmzap-&gt;map;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    sector_t backing_block;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="comment">/* Out of bounds? */</span></div>
@@ -167,7 +167,7 @@ $(function() {
 <div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="dm-zap-map_8c.html#a8b33c484fe62fd84b76c014877ef9f68">   96</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="dm-zap-map_8c.html#a8b33c484fe62fd84b76c014877ef9f68">dmzap_remap_copy</a>(<span class="keyword">struct</span> dmzap_target *dmzap,</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    sector_t read_backing_block, sector_t write_backing_block, sector_t len)</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;{</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">struct </span>dmzap_map *map = &amp;dmzap-&gt;map;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">struct </span><a class="code" href="dm-zap-target_8c.html#a43a56808aed8f10e2c0b5c040e478b41">dmzap_map</a> *map = &amp;dmzap-&gt;map;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    sector_t user = 0;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="comment">//TODO /* Out of bounds? */</span></div>
@@ -197,7 +197,7 @@ $(function() {
 <div class="line"><a name="l00126"></a><span class="lineno"><a class="line" href="dm-zap-map_8c.html#ad7d74cba1614a30428862ed7daf711cf">  126</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="dm-zap-map_8c.html#ad7d74cba1614a30428862ed7daf711cf">dmzap_map_update_if_eq</a>(<span class="keyword">struct</span> dmzap_target *dmzap,</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    sector_t user, sector_t backing, sector_t len, sector_t *orig_secs)</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;{</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="keyword">struct </span>dmzap_map *map = &amp;dmzap-&gt;map;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="keyword">struct </span><a class="code" href="dm-zap-target_8c.html#a43a56808aed8f10e2c0b5c040e478b41">dmzap_map</a> *map = &amp;dmzap-&gt;map;</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    sector_t backing_block;</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    sector_t m = 0;</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160; </div>
@@ -234,7 +234,7 @@ $(function() {
 <div class="line"><a name="l00163"></a><span class="lineno"><a class="line" href="dm-zap-map_8c.html#a96fe7def7b6b64c1de080f5b6120bbc7">  163</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="dm-zap-map_8c.html#a96fe7def7b6b64c1de080f5b6120bbc7">dmzap_map_lookup</a>(<span class="keyword">struct</span> dmzap_target *dmzap,</div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                sector_t user, sector_t *backing, sector_t len)</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;{</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="keyword">struct </span>dmzap_map *map = &amp;dmzap-&gt;map;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="keyword">struct </span><a class="code" href="dm-zap-target_8c.html#a43a56808aed8f10e2c0b5c040e478b41">dmzap_map</a> *map = &amp;dmzap-&gt;map;</div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    sector_t m = user;</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    sector_t left = len - 1;</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160; </div>
@@ -345,6 +345,7 @@ $(function() {
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="adm-zap-map_8c_html_a53360d8ab30a353868053542b39bf0aa"><div class="ttname"><a href="dm-zap-map_8c.html#a53360d8ab30a353868053542b39bf0aa">dmzap_unmap_zone_entries</a></div><div class="ttdeci">void dmzap_unmap_zone_entries(struct dmzap_target *dmzap, struct dmzap_zone *zone)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-map_8c_source.html#l00258">dm-zap-map.c:258</a></div></div>
 <div class="ttc" id="adm-zap-map_8c_html_a41363d0a7016f4597c3e1513ca3ddd4c"><div class="ttname"><a href="dm-zap-map_8c.html#a41363d0a7016f4597c3e1513ca3ddd4c">dmzap_get_invalid_flag_ret_user_block</a></div><div class="ttdeci">int dmzap_get_invalid_flag_ret_user_block(struct dmzap_target *dmzap, struct dmzap_zone *zone, sector_t chunk_block, sector_t *ret_user_block)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-map_8c_source.html#l00211">dm-zap-map.c:211</a></div></div>
+<div class="ttc" id="adm-zap-target_8c_html_a43a56808aed8f10e2c0b5c040e478b41"><div class="ttname"><a href="dm-zap-target_8c.html#a43a56808aed8f10e2c0b5c040e478b41">dmzap_map</a></div><div class="ttdeci">static int dmzap_map(struct dm_target *ti, struct bio *bio)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-target_8c_source.html#l00505">dm-zap-target.c:505</a></div></div>
 <div class="ttc" id="adm-zap-map_8c_html_a96fe7def7b6b64c1de080f5b6120bbc7"><div class="ttname"><a href="dm-zap-map_8c.html#a96fe7def7b6b64c1de080f5b6120bbc7">dmzap_map_lookup</a></div><div class="ttdeci">int dmzap_map_lookup(struct dmzap_target *dmzap, sector_t user, sector_t *backing, sector_t len)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-map_8c_source.html#l00163">dm-zap-map.c:163</a></div></div>
 <div class="ttc" id="adm-zap-map_8c_html_ab288b8683e2e74ab56ddf2994ce3c9b4"><div class="ttname"><a href="dm-zap-map_8c.html#ab288b8683e2e74ab56ddf2994ce3c9b4">dmzap_map_init</a></div><div class="ttdeci">int dmzap_map_init(struct dmzap_target *dmzap)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-map_8c_source.html#l00014">dm-zap-map.c:14</a></div></div>
 <div class="ttc" id="adm-zap-map_8c_html_a9ce5bc680f9b5784aecb5b219285f5aa"><div class="ttname"><a href="dm-zap-map_8c.html#a9ce5bc680f9b5784aecb5b219285f5aa">dmzap_get_invalid_flag</a></div><div class="ttdeci">int dmzap_get_invalid_flag(struct dmzap_target *dmzap, struct dmzap_zone *zone, sector_t chunk_block)</div><div class="ttdef"><b>Definition:</b> <a href="dm-zap-map_8c_source.html#l00241">dm-zap-map.c:241</a></div></div>
