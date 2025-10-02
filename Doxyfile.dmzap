@@ -1,0 +1,39 @@
+# --- 최소 설정 ---
+PROJECT_NAME           = "dmzap call graph"
+OUTPUT_DIRECTORY       = docs-dmzap
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+
+# 분석 대상: dmzap 소스만 (경로 맞게 수정)
+INPUT                  = drivers/md/dm-zap*.c
+FILE_PATTERNS          = *.c *.h
+RECURSIVE              = NO
+
+# 그래프 활성화
+HAVE_DOT               = YES
+CALL_GRAPH             = YES          # 이 함수가 "무엇을 호출하는지"
+CALLER_GRAPH           = YES          # "누가 이 함수를 호출하는지"
+DOT_IMAGE_FORMAT       = png
+DOT_MULTI_TARGETS      = YES
+
+# 소스 파싱 품질
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+EXTRACT_STATIC_PRIVATE = YES
+SOURCE_BROWSER         = YES
+
+# 전처리/매크로 확장 (커널 매크로 많음)
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = NO
+PREDEFINED             = __KERNEL__=1 \
+                         __inline__=inline \
+                         __always_inline__=inline \
+                         likely(x)=x \
+                         unlikely(x)=x
+
+# 인클루드 경로 (커널 루트 기준으로 맞게 수정)
+INCLUDE_PATH           = include \
+                         arch/x86/include \
+                         drivers/md
+STRIP_FROM_PATH        = .
