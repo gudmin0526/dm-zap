@@ -75,6 +75,9 @@ inline void dmzap_bio_endio(struct bio *bio, blk_status_t status)
  */
 sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap)
 {
+	// [로그] 현재 어떤 존의 wp 값을 읽어 가는지 확인하는 로그
+    printk(KERN_INFO "dmzap_get_seq_wp: Get WP from Zone[%u] -> %llu\n",
+           dmzap->dmzap_zone_wp, (unsigned long long)current_wp);
 	return dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->wp;
 }
 

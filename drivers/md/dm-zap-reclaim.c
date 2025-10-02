@@ -1104,7 +1104,6 @@ static bool dmzap_should_reclaim(struct dmzap_target *dmzap)
 			< dmzap->nr_internal_zones)
     return true;
 
-  //return dmzap->reclaim->p_free_user_zones <= dmzap->reclaim_limit;
 	return dmzap->reclaim->p_free_zones <= dmzap->reclaim_limit;
 }
 

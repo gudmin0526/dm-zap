@@ -22,7 +22,7 @@ void dmzap_update_seq_wp(struct dmzap_target *dmzap, sector_t bio_sectors)
 	zone->cond = BLK_ZONE_COND_IMP_OPEN;
 
 	// [로그] 현재 사용 중인 zone과 wp 업데이트 확인
-	printk(KERN_INFO "dmzap: Zone[%u] WP updated: %llu -> %llu (+%llu sectors)\n",
+	printk(KERN_INFO "dmzap_update_seq_wp: Zone[%u] WP updated: %llu -> %llu (+%llu sectors)\n",
 	       dmzap->dmzap_zone_wp, old_wp, zone->wp, (u64)bio_sectors);
 
 	if (zone->wp >= zone->start + zone->len) { //TODO ZNS capacity: if (zone->wp >= zone->start + zone->capacity) {
@@ -36,7 +36,7 @@ void dmzap_update_seq_wp(struct dmzap_target *dmzap, sector_t bio_sectors)
 		zone->cond = BLK_ZONE_COND_FULL;
 		dmzap->reclaim->nr_free_zones--;
 		dmzap_calc_p_free_zone(dmzap);
-		trace_printk("-Number of free zones %lu. (total %u)\n", dmzap->reclaim->nr_free_zones, dmzap->nr_internal_zones);
+		printk("dmzap_update_seq_wp: Number of free zones [%lu]. (total %u)\n", dmzap->reclaim->nr_free_zones, dmzap->nr_internal_zones);
 
 		if(dmzap->victim_selection_method == DMZAP_FAST_CB){
 			dmzap_assign_zone_to_reclaim_class(dmzap, &dmzap->dmzap_zones[dmzap->dmzap_zone_wp]);
