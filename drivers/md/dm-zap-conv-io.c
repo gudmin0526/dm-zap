@@ -22,7 +22,7 @@ void dmzap_update_seq_wp(struct dmzap_target *dmzap, sector_t bio_sectors)
 	zone->cond = BLK_ZONE_COND_IMP_OPEN;
 
 	// [로그] 현재 사용 중인 zone과 wp 업데이트 확인
-	printk(KERN_INFO "dmzap_update_seq_wp: Zone[%u] WP updated: %llu -> %llu (+%llu sectors)\n",
+	printk(KERN_INFO "dmzap_update_seq_wp: Zone[%u] WP updated: %llu -> %llu (+%llu secs)\n",
 	       dmzap->dmzap_zone_wp, old_wp, zone->wp, (u64)bio_sectors);
 
 	if (zone->wp >= zone->start + zone->len) { //TODO ZNS capacity: if (zone->wp >= zone->start + zone->capacity) {
@@ -36,7 +36,7 @@ void dmzap_update_seq_wp(struct dmzap_target *dmzap, sector_t bio_sectors)
 		zone->cond = BLK_ZONE_COND_FULL;
 		dmzap->reclaim->nr_free_zones--;
 		dmzap_calc_p_free_zone(dmzap);
-		printk("dmzap_update_seq_wp: Number of free zones [%lu]. (total %u)\n", dmzap->reclaim->nr_free_zones, dmzap->nr_internal_zones);
+		printk(KERN_INFO "dmzap_update_seq_wp: Number of free zones [%lu]. (total %u)\n", dmzap->reclaim->nr_free_zones, dmzap->nr_internal_zones);
 
 		if(dmzap->victim_selection_method == DMZAP_FAST_CB){
 			dmzap_assign_zone_to_reclaim_class(dmzap, &dmzap->dmzap_zones[dmzap->dmzap_zone_wp]);
@@ -183,6 +183,11 @@ static int dmzap_submit_bio(struct dmzap_target *dmzap,
 	clone->bi_private = bioctx;
 
 	//bio_advance(bio, clone->bi_iter.bi_size);
+
+	/* [로그] 원본과 클론 bio의 주소, 시작 섹터, 크기 정보 출력 */
+	printk(KERN_INFO "dmzap_submit_bio: Cloning BIO. orig[addr:%p, start_sec:%llu, size_secs:%u] -> clone[addr:%p, start_sec:%llu, size_secs:%u]\n",
+	       bio, (u64)bio->bi_iter.bi_sector, bio_sectors(bio),
+	       clone, (u64)clone->bi_iter.bi_sector, bio_sectors(clone));
 
 	refcount_inc(&bioctx->ref);
 	submit_bio_noacct(clone);
