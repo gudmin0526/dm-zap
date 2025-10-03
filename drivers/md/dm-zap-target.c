@@ -542,7 +542,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		dm_accept_partial_bio(bio, dev->zone_nr_sectors - chunk_sector);
         
 		/* [로그] bio 분할 후, 변경된 bio의 시작 섹터와 섹터 크기를 출력 */
-		printk(KERN_INFO "dmzap_map: after BIO split. orig[addr:%p, start_sec:%llu, size_secs:(%u -> %u)]",
+		printk(KERN_INFO "dmzap_map: after BIO split. orig[addr:%p, start:%llu, size:(%u -> %u)]",
 				bio, (u64)bio->bi_iter.bi_sector, original_sectors, bio_sectors(bio));
 	}
 	/* Now ready to handle this BIO */

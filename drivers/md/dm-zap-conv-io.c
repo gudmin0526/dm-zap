@@ -185,9 +185,10 @@ static int dmzap_submit_bio(struct dmzap_target *dmzap,
 	//bio_advance(bio, clone->bi_iter.bi_size);
 
 	/* [로그] 원본과 클론 bio의 주소, 시작 섹터, 크기 정보 출력 */
-	printk(KERN_INFO "dmzap_submit_bio: Cloning BIO. orig[addr:%p, start_sec:%llu, size_secs:%u] -> clone[addr:%p, start_sec:%llu, size_secs:%u]\n",
-	       bio, (u64)bio->bi_iter.bi_sector, bio_sectors(bio),
-	       clone, (u64)clone->bi_iter.bi_sector, bio_sectors(clone));
+	printk(KERN_INFO "dmzap_submit_bio: Cloning BIO. op[%d], orig[start:%llu, size:%u] -> clone[start:%llu, size:%u]\n",
+			bio_op(bio),
+			(u64)bio->bi_iter.bi_sector, bio_sectors(bio),
+	    	(u64)clone->bi_iter.bi_sector, bio_sectors(clone));
 
 	refcount_inc(&bioctx->ref);
 	submit_bio_noacct(clone);
