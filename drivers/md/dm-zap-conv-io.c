@@ -265,7 +265,7 @@ int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 	 * 1.dmzap_get_seq_wp 대신 bioctx를 활용하여 dmzap_map에서 예약한 wp에 쓴다.
 	 * 2.이때 예약한 wp가 dmzap_get_seq_wp보다 뒤에 있다면(크다면) 대기한다.
 	 */
-	while (bioctx->resv_wp > dmzap_get_seq_wp(dmzap)) {
+	while (bioctx->resv_wp != dmzap_get_seq_wp(dmzap)) {
 		if (wr_locked) {
 			clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 			wr_locked = 0;
