@@ -574,11 +574,12 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	/* Split zone BIOs to fit entirely into a zone */
 	chunk_sector = sector & (dev->zone_nr_sectors - 1);
 	if (chunk_sector + nr_sectors > dev->zone_nr_sectors) {
-		/* [로그] bio 분할 전, bio의 시작 섹터와 섹터 크기를 출력 */
-		printk(KERN_INFO "dmzap_map: before BIO split. op[%d], orig[start:%llu, size:(%u -> %u)]",
-				bio_op(bio), (u64)sector, original_sectors, bio_sectors(bio));
-
 		sector_t original_sectors = nr_sectors;
+
+		/* [로그] bio 분할 전, bio의 시작 섹터와 섹터 크기를 출력 */
+		printk(KERN_INFO "dmzap_map: before BIO split. op[%d], chunk_sector: %llu, size: %u",
+				bio_op(bio), (u64)sector, chunk_sector, bio_sectors(bio));
+		
 		dm_accept_partial_bio(bio, dev->zone_nr_sectors - chunk_sector);
 		
 		/* [로그] bio 분할 후, bio의 시작 섹터와 섹터 크기를 출력 */
