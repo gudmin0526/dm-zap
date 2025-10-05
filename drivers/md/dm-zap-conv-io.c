@@ -250,6 +250,7 @@ int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 {
 	struct dmzap_bioctx *bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
 	int wr_locked = 0;
+	sector_t cur_wp;
 	int ret;
 
 	/* We can only have one outstanding write at a time */
@@ -263,20 +264,25 @@ int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 
 	/* [수정] 
 	 * 1.dmzap_get_seq_wp 대신 bioctx를 활용하여 dmzap_map에서 예약한 wp에 쓴다.
-	 * 2.이때 예약한 wp가 dmzap_get_seq_wp보다 뒤에 있다면(크다면) 대기한다.
+	 * 2.이때 예약한 wp가 dmzap_get_seq_wp과 같지 않다면 yield한다.
 	 */
-	while (bioctx->resv_wp != dmzap_get_seq_wp(dmzap)) {
+	cur_wp = READ_ONCE(dmzap_get_seq_wp(dmzap));
+	while (bioctx->resv_wp != cur_wp) {
+		/* [로그] 현재 어디서 대기하고 있는지 확인 */
+		printk(KERN_INFO "dmzap_conv_write: op[%d], resv_wp: %llu, cur_wp: %llu",
+				bio_op(bio), (u64)bioctx->resv_wp, (u64)cur_wp);
 		if (wr_locked) {
-			clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 			wr_locked = 0;
+			clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 		}
 		io_schedule();
-	}
-
-	if (!wr_locked) {
-		while(test_and_set_bit_lock(DMZAP_WR_OUTSTANDING,
-				&dmzap->write_bitmap))
-		io_schedule();
+		
+		while(!wr_locked && test_and_set_bit_lock(DMZAP_WR_OUTSTANDING,
+			&dmzap->write_bitmap))
+			io_schedule();
+		
+		wr_locked = 1;
+		cur_wp = dmzap_get_seq_wp(dmzap);
 	}
 
 	ret = dmzap_submit_bio(dmzap, bioctx->resv_wp, bio);
@@ -288,7 +294,6 @@ int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 
 	return DM_MAPIO_SUBMITTED;
 }
-
 
 int dmzap_handle_discard(struct dmzap_target *dmzap, struct bio *bio)
 {
