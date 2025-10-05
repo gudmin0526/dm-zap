@@ -558,7 +558,6 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	sector_t sector = bio->bi_iter.bi_sector;
 	unsigned int nr_sectors = bio_sectors(bio);
 	sector_t chunk_sector;
-	int resv_locked = 0;
 	int ret;
 
 	if (dmzap_bdev_is_dying(dmzap->dev))
@@ -587,11 +586,10 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	 */
 	if (bio_op(bio) == REQ_OP_WRITE) {
 		spin_lock(&dmzap->resv_lock);
-		resv_locked = 1;
 		bioctx->resv_wp = dmzap_get_resv_seq_wp(dmzap);
 		/* [로그] 예약한 wp 출력 */
-		printk(KERN_INFO "dmzap_map: get resv wp. op[%d], resv_wp: %llu, size: %u",
-				bio_op(bio), bioctx->resv_wp, nr_sectors);
+		printk(KERN_INFO "dmzap_map: get resv wp. op[%d], sector: %llu, resv_wp: %llu, size: %u",
+				bio_op(bio), sector, bioctx->resv_wp, bio_sectors(bio));
 		sector = bioctx->resv_wp;
 	} else if (bio_op(bio) == REQ_OP_READ) {
 		/* TODO */
@@ -599,8 +597,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 
 	/* The BIO should be block aligned */
 	if ((nr_sectors & DMZ_BLOCK_SECTORS_MASK) || (sector & DMZ_BLOCK_SECTORS_MASK)) {
-		if (resv_locked)
-			spin_unlock(&dmzap->resv_lock);
+		spin_unlock(&dmzap->resv_lock);
 		return DM_MAPIO_KILL;
 	}
 
@@ -622,8 +619,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	
 	if (bio_op(bio) == REQ_OP_WRITE) {
 		dmzap_update_resv_seq_wp(dmzap, bio_sectors(bio));
-		if (resv_locked)
-			spin_unlock(&dmzap->resv_lock);
+		spin_unlock(&dmzap->resv_lock);
 	}
 
 	/* Now ready to handle this BIO */
