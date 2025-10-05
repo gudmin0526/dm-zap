@@ -103,9 +103,10 @@ static inline void dmzap_bio_end_wr(struct bio *bio,
 	} else {
 		int ret;
 
+		/* [수정] 사전에 예약한 주소로 업데이트 */
 		ret = dmzap_map_update(dmzap,
 			dmz_sect2blk(bioctx->user_sec),
-			dmz_sect2blk(dmzap_get_seq_wp(dmzap)),
+			dmz_sect2blk(bioctx->resv_wp),
 			dmz_bio_blocks(bio));
 
 		dmzap_update_seq_wp(dmzap, bio_sectors(bio));
@@ -185,7 +186,7 @@ static int dmzap_submit_bio(struct dmzap_target *dmzap,
 	//bio_advance(bio, clone->bi_iter.bi_size);
 
 	/* [로그] 원본과 클론 bio의 주소, 시작 섹터, 크기 정보 출력 */
-	printk(KERN_INFO "dmzap_submit_bio: Cloning BIO. op[%d], orig[start:%llu, size:%u] -> clone[start:%llu, size:%u]\n",
+	printk(KERN_INFO "dmzap_submit_bio: op[%d], orig[start:%llu, size:%u] -> clone[start:%llu, size:%u]\n",
 			bio_op(bio),
 			(u64)bio->bi_iter.bi_sector, bio_sectors(bio),
 	    	(u64)clone->bi_iter.bi_sector, bio_sectors(clone));

@@ -81,7 +81,7 @@ sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap)
 }
 
 /* [수정]
- * Get the resv write pointer (sector)
+ * Get the resv sequential write pointer (sector)
  */
 sector_t dmzap_get_resv_seq_wp(struct dmzap_target *dmzap)
 {
@@ -559,6 +559,9 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		spin_lock(&dmzap->resv_lock);
 		resv_locked = 1;
 		bioctx->resv_wp = dmzap_get_resv_seq_wp(dmzap);
+		/* [로그] 예약한 wp 출력 */
+		printk(KERN_INFO "dmzap_map: get resv wp. op[%d], resv_wp: %llu, size: %u",
+				bio_op(bio), bioctx->resv_wp, nr_sectors);
 		sector = bioctx->resv_wp;
 	} else if (bio_op(bio) == REQ_OP_READ) {
 		/* TODO */
@@ -577,13 +580,13 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		sector_t original_sectors = nr_sectors;
 
 		/* [로그] bio 분할 전, bio의 시작 섹터와 섹터 크기를 출력 */
-		printk(KERN_INFO "dmzap_map: before BIO split. op[%d], offset: %llu, start: %llu, size: %llu",
-				bio_op(bio), chunk_sector, sector, bio_sectors(bio));
+		printk(KERN_INFO "dmzap_map: before split. op[%d], orig[start: %llu, offset: %llu]",
+				bio_op(bio), sector, chunk_sector);
 		
 		dm_accept_partial_bio(bio, dev->zone_nr_sectors - chunk_sector);
 		
 		/* [로그] bio 분할 후, bio의 시작 섹터와 섹터 크기를 출력 */
-		printk(KERN_INFO "dmzap_map: after BIO split. op[%d], orig[start:%llu, size:(%llu -> %llu)]",
+		printk(KERN_INFO "dmzap_map: after split. op[%d], orig[start:%llu, size:(%u -> %u)]",
 				bio_op(bio), sector, original_sectors, bio_sectors(bio));
 	}
 	

@@ -321,6 +321,8 @@ int dmzap_remap_copy(struct dmzap_target *dmzap,
 
 sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap);
 void dmzap_update_seq_wp(struct dmzap_target *dmzap, sector_t bio_sectors);
+sector_t dmzap_get_resv_seq_wp(struct dmzap_target *dmzap);
+void dmzap_update_resv_seq_wp(struct dmzap_target *dmzap, sector_t sector);
 inline void print_mapping(struct dmzap_target *dmzap);
 int dmzap_handle_discard(struct dmzap_target *dmzap, struct bio *bio);
 int dmzap_map_seq(struct dmzap_target *dmzap, struct bio *bio);
