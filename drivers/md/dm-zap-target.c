@@ -409,7 +409,7 @@ static void dmzap_chunk_work_(struct work_struct *work)
 			}
 				
 			/* 읽기 요청이거나, 쓰기 요청이면서 순서가 아닌 경우 다음 쓰기 요청을 찾는다. */
-			while (bio_op(bio) == REQ_OP_WRITE || 
+			while (bio_op(bio) == REQ_OP_READ || 
 					(bio_op(bio) == REQ_OP_WRITE && 
 					bioctx->resv_wp != dmzap_get_seq_wp(dmzap))) {
 				bio_list_add(&cw->bio_list, bio);
