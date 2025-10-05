@@ -598,7 +598,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 
 		/* [수정] 큐잉이 실패했다면 예약 wp 롤백 */
 		if (bio_op(bio) == REQ_OP_WRITE) {
-			spinlock(&dmzap->resv_lock);
+			spin_lock(&dmzap->resv_lock);
 			dmzap_update_resv_seq_wp(dmzap, -bio_sectors(bio));
 			spin_unlock(&dmzap->resv_lock);
 		}
