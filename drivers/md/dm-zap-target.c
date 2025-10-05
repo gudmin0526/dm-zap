@@ -42,6 +42,8 @@ static inline void dmzap_init_bioctx(struct dmzap_target *dmzap,
 	bioctx->target = dmzap;
 	bioctx->user_sec = bio->bi_iter.bi_sector;
 	bioctx->bio = bio;
+	/* [수정 ]*/
+	bioctx->resv_wp = 0;
 	refcount_set(&bioctx->ref, 1);
 }
 
@@ -76,6 +78,21 @@ inline void dmzap_bio_endio(struct bio *bio, blk_status_t status)
 sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap)
 {
 	return dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->wp;
+}
+
+/* [수정]
+ * Get the resv write pointer (sector)
+ */
+sector_t dmzap_get_resv_seq_wp(struct dmzap_target *dmzap)
+{
+	return dmzap->dmzap_zones[dmzap->dmzap_zone_wp].resv_wp;
+}
+
+/* [수정]
+ * Advance the resv write pointer (sector)
+ */
+void dmzap_update_resv_seq_wp(struct dmzap_target *dmzap, sector_t sector) {
+	dmzap->dmzap_zones[dmzap->dmzap_zone_wp].resv_wp += sector;
 }
 
 //TODO is this nessesary?
@@ -168,6 +185,10 @@ int dmzap_zones_init(struct dmzap_target *dmzap)
 		dmzap->dmzap_zones[i].shift_time = 0;
 		dmzap->dmzap_zones[i].cb = -1;
 		dmzap->dmzap_zones[i].reclaim_class = -1;
+
+		/* [수정] Reserve work */
+		dmzap->dmzap_zones[i].resv_wp = 0;
+
 		INIT_LIST_HEAD(&dmzap->dmzap_zones[i].link);
 		RB_CLEAR_NODE(&dmzap->dmzap_zones[i].node);
 		mutex_init(&dmzap->dmzap_zones[i].reclaim_class_lock);
@@ -503,9 +524,11 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 {
 	struct dmzap_target *dmzap = ti->private;
 	struct dmz_dev *dev = dmzap->dev;
+	struct dmzap_bioctx *bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
 	sector_t sector = bio->bi_iter.bi_sector;
 	unsigned int nr_sectors = bio_sectors(bio);
 	sector_t chunk_sector;
+	int resv_locked = 0;
 	int ret;
 
 	if (dmzap_bdev_is_dying(dmzap->dev))
@@ -515,10 +538,6 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 
 	if (!nr_sectors && bio_op(bio) != REQ_OP_WRITE)
 		return DM_MAPIO_REMAPPED;
-
-	/* The BIO should be block aligned */
-	if ((nr_sectors & DMZ_BLOCK_SECTORS_MASK) || (sector & DMZ_BLOCK_SECTORS_MASK))
-		return DM_MAPIO_KILL;
 
 	/* Initialize the BIO context */
 	dmzap_init_bioctx(dmzap,bio);
@@ -532,16 +551,43 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		return DM_MAPIO_SUBMITTED;
 	}
 
+	/* [수정]
+	 * 1. 쓰기 요청의 경우 wp를 예약해 bioctx에 저장
+	 * 2. TODO: 읽기 요청의 경우 기존의 매핑을 확인해 PBA 기준으로 분할
+	 */
+	if (bio_op(bio) == REQ_OP_WRITE) {
+		spin_lock(&dmzap->resv_lock);
+		resv_locked = 1;
+		bioctx->resv_wp = dmzap_get_resv_seq_wp(dmzap);
+		sector = bioctx->resv_wp;
+	} else if (bio_op(bio) == REQ_OP_READ) {
+		/* TODO */
+	}
+
+	/* The BIO should be block aligned */
+	if ((nr_sectors & DMZ_BLOCK_SECTORS_MASK) || (sector & DMZ_BLOCK_SECTORS_MASK)) {
+		if (resv_locked)
+			spin_unlock(&dmzap->resv_lock);
+		return DM_MAPIO_KILL;
+	}
+
 	/* Split zone BIOs to fit entirely into a zone */
 	chunk_sector = sector & (dev->zone_nr_sectors - 1);
 	if (chunk_sector + nr_sectors > dev->zone_nr_sectors) {
 		sector_t original_sectors = nr_sectors;
 		dm_accept_partial_bio(bio, dev->zone_nr_sectors - chunk_sector);
-        
+		
 		/* [로그] bio 분할 후, 변경된 bio의 시작 섹터와 섹터 크기를 출력 */
 		printk(KERN_INFO "dmzap_map: after BIO split. op[%d], orig[start:%llu, size:(%u -> %u)]",
-				bio_op(bio), (u64)bio->bi_iter.bi_sector, original_sectors, bio_sectors(bio));
+				bio_op(bio), (u64)sector, original_sectors, bio_sectors(bio));
 	}
+	
+	if (bio_op(bio) == REQ_OP_WRITE) {
+		dmzap_update_resv_seq_wp(dmzap, bio_sectors(bio));
+		if (resv_locked)
+			spin_unlock(&dmzap->resv_lock);
+	}
+
 	/* Now ready to handle this BIO */
 	ret = dmzap_queue_chunk_work(dmzap, bio);
 	if (ret) {
@@ -549,6 +595,13 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 			      "BIO op %d, can't process chunk %llu, err %i\n",
 			      bio_op(bio), (u64)dmzap_bio_chunk(dev, bio),
 			      ret);
+
+		/* [수정] 큐잉이 실패했다면 예약 wp 롤백 */
+		if (bio_op(bio) == REQ_OP_WRITE) {
+			spinlock(&dmzap->resv_lock);
+			dmzap_update_resv_seq_wp(dmzap, -bio_sectors(bio));
+			spin_unlock(&dmzap->resv_lock);
+		}
 		return DM_MAPIO_REQUEUE;
 	}
 
@@ -777,6 +830,9 @@ static int dmzap_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		ret = -ENOMEM;
 		goto err_bio;
 	}
+
+	/* [수정] Reserve work */
+	spin_lock_init(&dmzap->resv_lock);
 
 	/* Flush work */
 	spin_lock_init(&dmzap->flush_lock);

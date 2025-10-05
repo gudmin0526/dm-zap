@@ -95,6 +95,9 @@ struct dmzap_zone {
 	struct mutex reclaim_class_lock;
 
 	struct mutex lock;
+
+	/* [수정] 현재 예약된 wp */
+	sector_t resv_wp;
 };
 
 struct dmzap_fegc_heap{
@@ -246,6 +249,9 @@ struct dmzap_target {
 	struct workqueue_struct *chunk_wq;
 	struct mutex		chunk_lock;
 
+	/* [수정] For wp reservation */
+	spinlock_t 		resv_lock;
+
 	/* For flush */
 	spinlock_t		flush_lock;
 	struct bio_list		flush_list;
@@ -287,6 +293,8 @@ struct dmzap_bioctx {
 	struct bio		*bio;
 	refcount_t		ref;
 	sector_t		user_sec;
+	/* [수정] 예약한 wp 추가 */
+	sector_t 	    resv_wp;
 };
 
 /* dm-zap-target.c */
