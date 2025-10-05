@@ -264,9 +264,9 @@ int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 
 	/* [수정] 
 	 * 1.dmzap_get_seq_wp 대신 bioctx를 활용하여 dmzap_map에서 예약한 wp에 쓴다.
-	 * 2.이때 예약한 wp가 dmzap_get_seq_wp과 같지 않다면 yield한다.
+	 * 2.이때 예약한 wp가 dmzap_get_seq_wp과 같지 않다면 busy-wait한다.
 	 */
-	cur_wp = READ_ONCE(dmzap_get_seq_wp(dmzap));
+	cur_wp = dmzap_get_seq_wp(dmzap);
 	while (bioctx->resv_wp != cur_wp) {
 		/* [로그] 현재 어디서 대기하고 있는지 확인 */
 		printk(KERN_INFO "dmzap_conv_write: op[%d], resv_wp: %llu, cur_wp: %llu",
