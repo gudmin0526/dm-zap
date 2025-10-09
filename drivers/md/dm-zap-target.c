@@ -163,6 +163,10 @@ int dmzap_zones_init(struct dmzap_target *dmzap)
 	/* Set up zones */
 	sector = 0;
 	for (i = 0; i < dmzap->nr_internal_zones ; i++) {
+		
+		/* [수정] Reserve work */
+		dmzap->dmzap_zones[i].resv_wp = sector;
+
 		struct blk_zone *zone = &dmzap->internal_zones[i];
 		zone->start = zone->wp = sector;
 		sector += dev->zone_nr_sectors;
@@ -185,9 +189,6 @@ int dmzap_zones_init(struct dmzap_target *dmzap)
 		dmzap->dmzap_zones[i].shift_time = 0;
 		dmzap->dmzap_zones[i].cb = -1;
 		dmzap->dmzap_zones[i].reclaim_class = -1;
-
-		/* [수정] Reserve work */
-		dmzap->dmzap_zones[i].resv_wp = 0;
 
 		INIT_LIST_HEAD(&dmzap->dmzap_zones[i].link);
 		RB_CLEAR_NODE(&dmzap->dmzap_zones[i].node);
@@ -447,6 +448,7 @@ static void dmzap_chunk_work_(struct work_struct *work)
 				break;
 			}
 			if (bio_op(bio) != REQ_OP_WRITE) {
+				/* 여기 의심 TODO */
 				mutex_unlock(&dmzap->chunk_lock);
 				dmzap_handle_bio(dmzap, cw, bio);
 				mutex_lock(&dmzap->chunk_lock);
