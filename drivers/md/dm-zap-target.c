@@ -293,6 +293,11 @@ int dmzap_handle_bio(struct dmzap_target *dmzap,
 				struct dmzap_chunk_work *cw, struct bio *bio)
 {
 	int ret;
+	struct dmzap_bioctx *bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
+
+	/* [로그] */
+	printk(KERN_INFO "dmzap_handle_bio: op[%d], lsa: %llu, resv_wp: %llu, size: %u",
+			bio_op(bio), (u64)bio->bi_iter.bi_sector, (u64)bioctx->resv_wp, bio_sectors(bio));
 
 	// [수정] dmzap_chunk_work_에서 잡은 락 해제
 	if (dmzap->dev->flags & DMZ_BDEV_DYING) {
@@ -301,8 +306,9 @@ int dmzap_handle_bio(struct dmzap_target *dmzap,
 		goto out;
 	}
 
-	// [수정] dmzap_chunk_work_에서 잡은 락 해제
+	// [수정] flush work, dmzap_chunk_work_에서 잡은 락 해제
 	if (!bio_sectors(bio)) {
+		
 		clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 		ret = DM_MAPIO_SUBMITTED;
 		goto out;
@@ -592,7 +598,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		spin_lock(&dmzap->resv_lock);
 		bioctx->resv_wp = dmzap_get_resv_seq_wp(dmzap);
 		/* [로그] 예약한 wp 출력 */
-		printk(KERN_INFO "dmzap_map: get resv wp. op[%d], sector: %llu, resv_wp: %llu, size: %u",
+		printk(KERN_INFO "dmzap_map: get resv wp. op[%d], lsa: %llu, resv_wp: %llu, size: %u",
 				bio_op(bio), sector, bioctx->resv_wp, bio_sectors(bio));
 		sector = bioctx->resv_wp;
 	} else if (bio_op(bio) == REQ_OP_READ) {
