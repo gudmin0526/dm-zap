@@ -411,7 +411,7 @@ static void dmzap_chunk_work_(struct work_struct *work)
 		
 		bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
 
-		if (bio_op(bio) == REQ_OP_READ) {
+		if (bio_op(bio) != REQ_OP_WRITE) {
 			mutex_unlock(&dmzap->chunk_lock);
 			dmzap_handle_bio(dmzap, cw, bio);
 			mutex_lock(&dmzap->chunk_lock);
@@ -446,7 +446,7 @@ static void dmzap_chunk_work_(struct work_struct *work)
 				looped = 1;
 				break;
 			}
-			if (bio_op(bio) == REQ_OP_READ) {
+			if (bio_op(bio) != REQ_OP_WRITE) {
 				mutex_unlock(&dmzap->chunk_lock);
 				dmzap_handle_bio(dmzap, cw, bio);
 				mutex_lock(&dmzap->chunk_lock);

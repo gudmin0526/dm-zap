@@ -84,6 +84,7 @@ void dmzap_update_seq_wp(struct dmzap_target *dmzap, sector_t bio_sectors)
 				return;
 			}
 		}
+		printk(KERN_INFO "dmzap_update_seq_wp: Find new zone to write to [%lu]", dmzap->dmzap_zone_wp);
 		dmz_dev_info(dmzap->dev, "Device is completely full.\n");
 	}
 }
