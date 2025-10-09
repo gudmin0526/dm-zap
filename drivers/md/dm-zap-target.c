@@ -394,45 +394,85 @@ static void dmzap_chunk_work_(struct work_struct *work)
 	struct dmzap_chunk_work *cw = container_of(work, struct dmzap_chunk_work, work);
 	struct dmzap_target *dmzap = cw->target;
 	struct dmzap_bioctx *bioctx;
-	struct bio *bio;
+	struct bio *bio, *first_bio;
+	int looped, cnt;
 
 	mutex_lock(&dmzap->chunk_lock);
 
 	/* [수정] 
-	 * 1.dmzap_get_seq_wp 대신 bioctx를 활용하여 dmzap_map에서 예약한 wp에 쓴다.
+	 * 1. dmzap_get_seq_wp 대신 bioctx를 활용하여 dmzap_map에서 예약한 wp에 쓴다.
 	 * 2. 이때 예약한 wp가 dmzap_get_seq_wp과 같지 않다면 busy-wait한다.
 	 * 3. 순서가 아닌 bio면 bio_list를 회전한다.
+	 * 4. 워크가 여러 개 일 수 있고, 나의 워크에 없을 수도 있으므로 한바퀴 돌면 놓아준다.
 	 */
 
 	/* Process the chunk BIOs */
-	while ((bio = bio_list_pop(&cw->bio_list))) {
-
+	while ((bio = bio_list_pop(&cw->bio_list))) {	
+		
 		bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
 
-		if (bio_op(bio) == REQ_OP_WRITE) {
-			/* [수정] write의 경우 여기부터 end_wr까지 직렬화 */
-			/* We can only have one outstanding write at a time */
-			while (test_and_set_bit_lock(DMZAP_WR_OUTSTANDING,
-					&dmzap->write_bitmap)) {
-				mutex_unlock(&dmzap->chunk_lock);
-				io_schedule();
-				mutex_lock(&dmzap->chunk_lock);
+		if (bio_op(bio) == REQ_OP_READ) {
+			mutex_unlock(&dmzap->chunk_lock);
+			dmzap_handle_bio(dmzap, cw, bio);
+			mutex_lock(&dmzap->chunk_lock);
+			dmzap_put_chunk_work(cw);
+			continue;
+		}
+
+		/* [수정] write의 경우 여기부터 end_wr까지 직렬화 */
+		/* We can only have one outstanding write at a time */
+		while (test_and_set_bit_lock(DMZAP_WR_OUTSTANDING,
+				&dmzap->write_bitmap)) {
+			mutex_unlock(&dmzap->chunk_lock);
+			io_schedule();
+			mutex_lock(&dmzap->chunk_lock);
+		}
+			
+		first_bio = bio; 
+		looped = 0; cnt = 0;
+
+		while (bio_op(bio) == REQ_OP_WRITE &&
+			   bioctx->resv_wp != dmzap_get_seq_wp(dmzap)) {
+						
+			bio_list_add(&cw->bio_list, bio);
+			bio = bio_list_pop(&cw->bio_list);
+			if (!bio) { /* bio_list가 빈 경우 */
+				looped = 1;
+				break;
 			}
-				
-			/* 읽기 요청이거나, 쓰기 요청이면서 순서가 아닌 경우 다음 쓰기 요청을 찾는다. */
-			while (bio_op(bio) == REQ_OP_READ || 
-					(bio_op(bio) == REQ_OP_WRITE && 
-					bioctx->resv_wp != dmzap_get_seq_wp(dmzap))) {
-				bio_list_add(&cw->bio_list, bio);
-				bio = bio_list_pop(&cw->bio_list);
-				bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
+			bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
+			cnt++;
+			if (first_bio == bio) { /* 원점으로 돌아온 경우 */
+				looped = 1;
+				break;
+			}
+			if (bio_op(bio) == REQ_OP_READ) {
+				mutex_unlock(&dmzap->chunk_lock);
+				dmzap_handle_bio(dmzap, cw, bio);
+				mutex_lock(&dmzap->chunk_lock);
+				dmzap_put_chunk_work(cw);
 			}
 		}
+
+		if (looped) {
+			/* [로그] 예약한 wp 출력 */
+			printk(KERN_INFO 
+				   "dmzap_chunk_work_: Unmatched. cw=%p, cnt=%d, resv_wp=%llu, seq_wp=%llu\n",
+       			   cw, cnt, bioctx->resv_wp, dmzap_get_seq_wp(dmzap));
+			clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
+			mutex_unlock(&dmzap->chunk_lock);
+			io_schedule();
+			mutex_lock(&dmzap->chunk_lock);
+			continue;
+		}
+
+		/* WRITE && resv_wp == seq_wp */
 		mutex_unlock(&dmzap->chunk_lock);
 		dmzap_handle_bio(dmzap, cw, bio);
 		mutex_lock(&dmzap->chunk_lock);
 		dmzap_put_chunk_work(cw);
 	}
+	
 
 	/* Queueing the work incremented the work refcount */
 	dmzap_put_chunk_work(cw);
@@ -599,7 +639,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		bioctx->resv_wp = dmzap_get_resv_seq_wp(dmzap);
 		/* [로그] 예약한 wp 출력 */
 		printk(KERN_INFO "dmzap_map: get resv wp. op[%d], lsa: %llu, resv_wp: %llu, size: %u",
-				bio_op(bio), sector, bioctx->resv_wp, bio_sectors(bio));
+				bio_op(bio), bio->bi_iter.bi_sector, bioctx->resv_wp, bio_sectors(bio));
 		sector = bioctx->resv_wp;
 	} else if (bio_op(bio) == REQ_OP_READ) {
 		/* TODO */
