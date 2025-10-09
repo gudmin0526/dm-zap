@@ -294,12 +294,16 @@ int dmzap_handle_bio(struct dmzap_target *dmzap,
 {
 	int ret;
 
+	// [수정] dmzap_chunk_work_에서 잡은 락 해제
 	if (dmzap->dev->flags & DMZ_BDEV_DYING) {
+		clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 		ret = -EIO;
 		goto out;
 	}
 
+	// [수정] dmzap_chunk_work_에서 잡은 락 해제
 	if (!bio_sectors(bio)) {
+		clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 		ret = DM_MAPIO_SUBMITTED;
 		goto out;
 	}
@@ -350,6 +354,7 @@ int dmzap_handle_bio(struct dmzap_target *dmzap,
 		dmzap->wa_print_time = jiffies;
 	}
 out:
+	/* [수정]: dmzap_chunk_work_에서 락을 잡고 flush 후 여기로 빠지면 락 해제를 못함 */
 	dmzap_bio_endio(bio, errno_to_blk_status(ret));
 	return ret;
 }
@@ -418,7 +423,6 @@ static void dmzap_chunk_work_(struct work_struct *work)
 			}
 		}
 		mutex_unlock(&dmzap->chunk_lock);
-
 		dmzap_handle_bio(dmzap, cw, bio);
 		mutex_lock(&dmzap->chunk_lock);
 		dmzap_put_chunk_work(cw);
