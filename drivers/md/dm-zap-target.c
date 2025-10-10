@@ -623,12 +623,21 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	/* Initialize the BIO context */
 	dmzap_init_bioctx(dmzap,bio);
 
+	printk(KERN_INFO "dmzap_map(0): op[%d], lba: %llu, size: %u",
+			bio_op(bio), bio->bi_iter.bi_sector, bio_sectors(bio));
+
+	/* [수정, 테스트] read, write, discard 모두 한 번에 하나만 */
+	spin_lock(&dmzap->resv_lock);
+	
 	/* Set the BIO pending in the flush list */
 	if (!nr_sectors && bio_op(bio) == REQ_OP_WRITE) {
 		spin_lock(&dmzap->flush_lock);
 		bio_list_add(&dmzap->flush_list, bio);
 		spin_unlock(&dmzap->flush_lock);
 		mod_delayed_work(dmzap->flush_wq, &dmzap->flush_work, 0);
+		
+		spin_unlock(&dmzap->resv_lock);
+		
 		return DM_MAPIO_SUBMITTED;
 	}
 
@@ -637,18 +646,19 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	 * 2. TODO: 읽기 요청의 경우 기존의 매핑을 확인해 PBA 기준으로 분할
 	 */
 	if (bio_op(bio) == REQ_OP_WRITE) {
-		spin_lock(&dmzap->resv_lock);
 		bioctx->resv_wp = dmzap_get_resv_seq_wp(dmzap);
 		/* [로그] 예약한 wp 출력 */
-		printk(KERN_INFO "dmzap_map: get resv wp. op[%d], lsa: %llu, resv_wp: %llu, size: %u",
+		printk(KERN_INFO "dmzap_map(1): op[%d], lba: %llu, resv_wp: %llu, size: %u",
 				bio_op(bio), bio->bi_iter.bi_sector, bioctx->resv_wp, bio_sectors(bio));
 		sector = bioctx->resv_wp;
 	} else if (bio_op(bio) == REQ_OP_READ) {
-		/* TODO */
+		printk(KERN_INFO "dmzap_map(2): lba: %llu, l2d: %llu, size: %u",
+				bio_op(bio), bio->bi_iter.bi_sector, dmzap->dmzap_map[sector], bio_sectors(bio));
 	}
 
 	/* The BIO should be block aligned */
 	if ((nr_sectors & DMZ_BLOCK_SECTORS_MASK) || (sector & DMZ_BLOCK_SECTORS_MASK)) {
+		printk(KERN_INFO "dmzap_map(3): BIO isn't block aligned.");
 		spin_unlock(&dmzap->resv_lock);
 		return DM_MAPIO_KILL;
 	}
@@ -659,20 +669,19 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		sector_t original_sectors = nr_sectors;
 
 		/* [로그] bio 분할 전, bio의 시작 섹터와 섹터 크기를 출력 */
-		printk(KERN_INFO "dmzap_map: before split. op[%d], orig[start: %llu, offset: %llu]",
+		printk(KERN_INFO "dmzap_map(4): before split. op[%d], orig[start: %llu, offset: %llu]",
 				bio_op(bio), sector, chunk_sector);
 		
 		dm_accept_partial_bio(bio, dev->zone_nr_sectors - chunk_sector);
 		
 		/* [로그] bio 분할 후, bio의 시작 섹터와 섹터 크기를 출력 */
-		printk(KERN_INFO "dmzap_map: after split. op[%d], orig[start:%llu, size:(%u -> %u)]",
+		printk(KERN_INFO "dmzap_map(5): after split. op[%d], orig[start:%llu, size:(%u -> %u)]",
 				bio_op(bio), sector, original_sectors, bio_sectors(bio));
 	}
 	
-	if (bio_op(bio) == REQ_OP_WRITE) {
+	if (bio_op(bio) == REQ_OP_WRITE)
 		dmzap_update_resv_seq_wp(dmzap, bio_sectors(bio));
-		spin_unlock(&dmzap->resv_lock);
-	}
+	spin_unlock(&dmzap->resv_lock);
 
 	/* Now ready to handle this BIO */
 	ret = dmzap_queue_chunk_work(dmzap, bio);
