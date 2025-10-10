@@ -675,7 +675,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 				bio_op(bio), sector, original_sectors, bio_sectors(bio));
 	}
 	
-	if (bio_op(bio) == REQ_OP_WRITE) {
+	if (bio_op(bio) == REQ_OP_WRITE)
 		dmzap_update_resv_seq_wp(dmzap, bio_sectors(bio));
 
 	/* Now ready to handle this BIO */
@@ -691,7 +691,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 			printk(KERN_INFO "dmzap_map(6): queueing failed.");
 			dmzap_update_resv_seq_wp(dmzap, -bio_sectors(bio));
 		}
-		
+
 		spin_unlock(&dmzap->resv_lock);
 		return DM_MAPIO_REQUEUE;
 	}
