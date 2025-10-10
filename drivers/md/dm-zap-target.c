@@ -653,7 +653,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		sector = bioctx->resv_wp;
 	} else if (bio_op(bio) == REQ_OP_READ) {
 		printk(KERN_INFO "dmzap_map(2): lba: %llu, l2d: %llu, size: %u",
-				bio_op(bio), bio->bi_iter.bi_sector, dmzap->map->l2d[sector], bio_sectors(bio));
+				bio_op(bio), bio->bi_iter.bi_sector, dmzap->map.l2d[sector], bio_sectors(bio));
 	}
 
 	/* The BIO should be block aligned */
