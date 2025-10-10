@@ -251,11 +251,10 @@ int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 {
 	int ret;
 
-	/* [수정] dmzap_chunk_work_ 부터 락을 잡는다. */
-	// /* We can only have one outstanding write at a time */
-	// while(test_and_set_bit_lock(DMZAP_WR_OUTSTANDING,
-	// 			&dmzap->write_bitmap))
-	// 	io_schedule();
+	/* We can only have one outstanding write at a time */
+	while(test_and_set_bit_lock(DMZAP_WR_OUTSTANDING,
+				&dmzap->write_bitmap))
+		io_schedule();
 
 	if (dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->cond == BLK_ZONE_COND_READONLY)
 		return -EROFS;
