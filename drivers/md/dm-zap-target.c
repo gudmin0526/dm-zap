@@ -623,6 +623,8 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	/* Initialize the BIO context */
 	dmzap_init_bioctx(dmzap,bio);
 
+	spin_lock(&dmzap->resv_lock);
+
 	printk(KERN_INFO "dmzap_map(0): op[%d], lba: %llu, size: %u",
 			bio_op(bio), bio->bi_iter.bi_sector, bio_sectors(bio));
 	
@@ -631,27 +633,28 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		spin_lock(&dmzap->flush_lock);
 		bio_list_add(&dmzap->flush_list, bio);
 		spin_unlock(&dmzap->flush_lock);
-		mod_delayed_work(dmzap->flush_wq, &dmzap->flush_work, 0);		
+		mod_delayed_work(dmzap->flush_wq, &dmzap->flush_work, 0);
+		
+		spin_unlock(&dmzap->resv_lock);
 		return DM_MAPIO_SUBMITTED;
 	}
 
 	/* [수정] 쓰기 요청의 경우 wp를 예약해 bioctx에 저장 */
 	if (bio_op(bio) == REQ_OP_WRITE) {
-		spin_lock(&dmzap->resv_lock);
 		bioctx->resv_wp = dmzap_get_resv_seq_wp(dmzap);
 		/* [로그] 예약한 wp 출력 */
 		printk(KERN_INFO "dmzap_map(1): op[%d], lba: %llu, resv_wp: %llu, size: %u",
 				bio_op(bio), bio->bi_iter.bi_sector, bioctx->resv_wp, bio_sectors(bio));
 		sector = bioctx->resv_wp;
-	} 
-	else {
-		printk(KERN_INFO "dmzap_map(2): op[%d], lba: %llu, l2d: %llu, size: %u",
-				bio_op(bio), bio->bi_iter.bi_sector, dmzap->map.l2d[sector], bio_sectors(bio));
+	} else if (bio_op(bio) == REQ_OP_READ) {
+		printk(KERN_INFO "dmzap_map(2): op[%d], lba: %llu, size: %u",
+				bio_op(bio), bio->bi_iter.bi_sector, bio_sectors(bio));
 	}
 
 	/* The BIO should be block aligned */
 	if ((nr_sectors & DMZ_BLOCK_SECTORS_MASK) || (sector & DMZ_BLOCK_SECTORS_MASK)) {
 		printk(KERN_INFO "dmzap_map(3): BIO isn't block aligned.");
+		
 		spin_unlock(&dmzap->resv_lock);
 		return DM_MAPIO_KILL;
 	}
@@ -674,11 +677,9 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	
 	if (bio_op(bio) == REQ_OP_WRITE) {
 		dmzap_update_resv_seq_wp(dmzap, bio_sectors(bio));
-		spin_unlock(&dmzap->resv_lock);
-	}
 
 	/* Now ready to handle this BIO */
-	ret = dmzap_queue_chunk_work(dmzap, bio);
+	ret = dmzap_queue_chunk_work(dmzap, bio);	
 	if (ret) {
 		dmz_dev_debug(dev,
 			      "BIO op %d, can't process chunk %llu, err %i\n",
@@ -688,13 +689,14 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		/* [수정] 큐잉이 실패했다면 예약 wp 롤백 */
 		if (bio_op(bio) == REQ_OP_WRITE) {
 			printk(KERN_INFO "dmzap_map(6): queueing failed.");
-			spin_lock(&dmzap->resv_lock);
 			dmzap_update_resv_seq_wp(dmzap, -bio_sectors(bio));
-			spin_unlock(&dmzap->resv_lock);
 		}
+		
+		spin_unlock(&dmzap->resv_lock);
 		return DM_MAPIO_REQUEUE;
 	}
 
+	spin_unlock(&dmzap->resv_lock);
 	return DM_MAPIO_SUBMITTED;
 }
 

@@ -69,10 +69,8 @@ int dmzap_map_update(struct dmzap_target *dmzap,
 		BUG();
 		return -1;
 	}
-	if(dmzap->show_debug_msg){
-		dmz_dev_debug(dmzap->dev, "mapping %d user block(s) from %d to backing block: %d",
-				(int)len, (int)user, (int)backing);
-	}
+	printk(KERN_INFO "dmzap_map_update: mapping %d user block(s) from %d to backing block: %d",
+			(int)len, (int)user, (int)backing);
 
 	while (len--) {
 		backing_block = map->l2d[user];
@@ -196,10 +194,8 @@ int dmzap_map_lookup(struct dmzap_target *dmzap,
 		}
 	}
 
-	if(dmzap->show_debug_msg){
-		dmz_dev_debug(dmzap->dev, "looked up %d user block(s) from %d to backing block: %d",
-				(int)(len - left), (int)user, (int)*backing);
-	}
+	printk(KERN_INFO "dmzap_map_lookup: looked up %d user block(s) from %d to backing block: %d",
+			(int)(len - left), (int)user, (int)*backing);
 
 	return len - left;
 }
