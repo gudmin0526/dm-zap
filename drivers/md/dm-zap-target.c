@@ -641,18 +641,17 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		return DM_MAPIO_SUBMITTED;
 	}
 
-	/* [수정]
-	 * 1. 쓰기 요청의 경우 wp를 예약해 bioctx에 저장
-	 * 2. TODO: 읽기 요청의 경우 기존의 매핑을 확인해 PBA 기준으로 분할
-	 */
+	/* [수정] 쓰기 요청의 경우 wp를 예약해 bioctx에 저장 */
 	if (bio_op(bio) == REQ_OP_WRITE) {
+		spin_lock(&dmzap->resv_lock);
 		bioctx->resv_wp = dmzap_get_resv_seq_wp(dmzap);
 		/* [로그] 예약한 wp 출력 */
 		printk(KERN_INFO "dmzap_map(1): op[%d], lba: %llu, resv_wp: %llu, size: %u",
 				bio_op(bio), bio->bi_iter.bi_sector, bioctx->resv_wp, bio_sectors(bio));
 		sector = bioctx->resv_wp;
-	} else if (bio_op(bio) == REQ_OP_READ) {
-		printk(KERN_INFO "dmzap_map(2): lba: %llu, l2d: %llu, size: %u",
+	} 
+	else {
+		printk(KERN_INFO "dmzap_map(2): op[%d], lba: %llu, l2d: %llu, size: %u",
 				bio_op(bio), bio->bi_iter.bi_sector, dmzap->map.l2d[sector], bio_sectors(bio));
 	}
 
@@ -679,9 +678,10 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 				bio_op(bio), sector, original_sectors, bio_sectors(bio));
 	}
 	
-	if (bio_op(bio) == REQ_OP_WRITE)
+	if (bio_op(bio) == REQ_OP_WRITE) {
 		dmzap_update_resv_seq_wp(dmzap, bio_sectors(bio));
-	spin_unlock(&dmzap->resv_lock);
+		spin_unlock(&dmzap->resv_lock);
+	}
 
 	/* Now ready to handle this BIO */
 	ret = dmzap_queue_chunk_work(dmzap, bio);
@@ -693,6 +693,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 
 		/* [수정] 큐잉이 실패했다면 예약 wp 롤백 */
 		if (bio_op(bio) == REQ_OP_WRITE) {
+			printk(KERN_INFO "dmzap_map(6): queueing failed.");
 			spin_lock(&dmzap->resv_lock);
 			dmzap_update_resv_seq_wp(dmzap, -bio_sectors(bio));
 			spin_unlock(&dmzap->resv_lock);
