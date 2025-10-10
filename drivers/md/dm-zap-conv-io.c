@@ -248,20 +248,42 @@ int dmzap_conv_read(struct dmzap_target *dmzap, struct bio *bio)
 int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 {
 	int ret;
+	unsigned int size, submitted;
+	sector_t left = bio_sectors(bio);
+	sector_t n_sectors;
+	struct blk_zone *zone;
 
 	/* We can only have one outstanding write at a time */
 	while(test_and_set_bit_lock(DMZAP_WR_OUTSTANDING,
 				&dmzap->write_bitmap))
 		io_schedule();
 
-	if (dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->cond == BLK_ZONE_COND_READONLY)
-		return -EROFS;
+	while (left) {
+		zone = dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone;
 
-	ret = dmzap_submit_bio(dmzap, dmzap_get_seq_wp(dmzap), bio);
-	if (ret) {
-		/* Out of memory, try again later */
-		clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
-		return ret;
+		if (zone->cond == BLK_ZONE_COND_READONLY)
+			return -EROFS;
+		
+		n_sectors = zone->len + zone->start - zone->wp;
+		if(left > n_sectors) {
+			submitted = n_sectors;
+		} else {
+			submitted = left;
+		}
+		size = submitted << SECTOR_SHIFT;
+
+		swap(bio->bi_iter.bi_size, size);
+		ret = dmzap_submit_bio(dmzap, dmzap_get_seq_wp(dmzap), bio);
+		swap(bio->bi_iter.bi_size, size);
+		
+		if (ret) {
+			/* Out of memory, try again later */
+			clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
+			return ret;
+		}
+
+		bio_advance(bio, size);
+		left -= submitted;
 	}
 
 	return DM_MAPIO_SUBMITTED;
