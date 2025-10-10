@@ -625,19 +625,13 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 
 	printk(KERN_INFO "dmzap_map(0): op[%d], lba: %llu, size: %u",
 			bio_op(bio), bio->bi_iter.bi_sector, bio_sectors(bio));
-
-	/* [수정, 테스트] read, write, discard 모두 한 번에 하나만 */
-	spin_lock(&dmzap->resv_lock);
 	
 	/* Set the BIO pending in the flush list */
 	if (!nr_sectors && bio_op(bio) == REQ_OP_WRITE) {
 		spin_lock(&dmzap->flush_lock);
 		bio_list_add(&dmzap->flush_list, bio);
 		spin_unlock(&dmzap->flush_lock);
-		mod_delayed_work(dmzap->flush_wq, &dmzap->flush_work, 0);
-		
-		spin_unlock(&dmzap->resv_lock);
-		
+		mod_delayed_work(dmzap->flush_wq, &dmzap->flush_work, 0);		
 		return DM_MAPIO_SUBMITTED;
 	}
 
