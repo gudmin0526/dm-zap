@@ -331,7 +331,6 @@ int dmzap_handle_bio(struct dmzap_target *dmzap,
 		mutex_lock(&dmzap->map.map_lock);
 		ret = dmzap_conv_write(dmzap, bio);
 		mutex_unlock(&dmzap->map.map_lock);
-
 		break;
 	case REQ_OP_DISCARD:
 	case REQ_OP_WRITE_ZEROES:
@@ -356,7 +355,6 @@ int dmzap_handle_bio(struct dmzap_target *dmzap,
 		dmzap->wa_print_time = jiffies;
 	}
 out:
-	/* [수정]: dmzap_chunk_work_에서 락을 잡고 flush 후 여기로 빠지면 락 해제를 못함 */
 	dmzap_bio_endio(bio, errno_to_blk_status(ret));
 	return ret;
 }
@@ -607,11 +605,6 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	/* Now ready to handle this BIO */
 	ret = dmzap_queue_chunk_work(dmzap, bio);	
 	if (ret) {
-		dmz_dev_debug(dev,
-			      "BIO op %d, can't process chunk %llu, err %i\n",
-			      bio_op(bio), (u64)dmzap_bio_chunk(dev, bio),
-			      ret);
-
 		/* [수정] 큐잉이 실패했다면 예약 wp 롤백 */
 		if (bio_op(bio) == REQ_OP_WRITE) {
 			printk(KERN_INFO "dmzap_map(6): queueing failed.");
