@@ -351,8 +351,6 @@ int dmzap_handle_bio(struct dmzap_target *dmzap,
 		dmzap->wa_print_time = jiffies;
 	}
 out:
-	if (bio_op(bio) == REQ_OP_WRITE)
-		clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 	dmzap_bio_endio(bio, errno_to_blk_status(ret));
 	return ret;
 }
