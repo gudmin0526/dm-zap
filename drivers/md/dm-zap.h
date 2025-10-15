@@ -98,6 +98,8 @@ struct dmzap_zone {
 
 	/* [수정] 현재 예약된 wp */
 	sector_t resv_wp;
+
+	/* */
 };
 
 struct dmzap_fegc_heap{
@@ -249,9 +251,6 @@ struct dmzap_target {
 	struct workqueue_struct *chunk_wq;
 	struct mutex		chunk_lock;
 
-	/* [수정] For wp reservation */
-	spinlock_t 		resv_lock;
-
 	/* For flush */
 	spinlock_t		flush_lock;
 	struct bio_list		flush_list;
@@ -283,6 +282,13 @@ struct dmzap_target {
 	struct dmzap_fegc_heap fagc_heap;
 	struct mutex *user_zone_locks;
 
+	
+	/* [수정] For wp reservation */
+	spinlock_t 		resv_lock;
+
+	/* [수정] wp 동기화를 위한 wait queue */
+	wait_queue_head_t resv_wq;
+	bool io_error;
 };
 
 /*

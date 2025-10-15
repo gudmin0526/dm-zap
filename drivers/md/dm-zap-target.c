@@ -383,6 +383,7 @@ static void dmzap_chunk_work_(struct work_struct *work)
 {
 	struct dmzap_chunk_work *cw = container_of(work, struct dmzap_chunk_work, work);
 	struct dmzap_target *dmzap = cw->target;
+	struct dmzap_bioctx *bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
 	struct bio *bio;
 
 	mutex_lock(&dmzap->chunk_lock);
@@ -390,6 +391,12 @@ static void dmzap_chunk_work_(struct work_struct *work)
 	/* Process the chunk BIOs */
 	while ((bio = bio_list_pop(&cw->bio_list))) {
 		mutex_unlock(&dmzap->chunk_lock);
+
+		/* [수정] 동기화를 위해 자신의 turn을 기다린다 */
+		if (bio_op(bio) == REQ_OP_WRITE) {
+			wait_event(dmzap->resv_wq, 
+					   READ_ONCE(get_seq_wp(dmzap)) == bioctx->resv_wp);
+		}
 		dmzap_handle_bio(dmzap, cw, bio);
 		mutex_lock(&dmzap->chunk_lock);
 		dmzap_put_chunk_work(cw);
@@ -831,6 +838,7 @@ static int dmzap_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	/* [수정] Reserve work */
 	spin_lock_init(&dmzap->resv_lock);
+	init_waitqueue_head(&dmzap->resv_wq);
 
 	/* Flush work */
 	spin_lock_init(&dmzap->flush_lock);

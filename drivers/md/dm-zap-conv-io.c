@@ -115,6 +115,9 @@ static inline void dmzap_bio_end_wr(struct bio *bio,
 		if(ret)
 			dmz_dev_err(dmzap->dev, "endio mapping failed!");
 	}
+	
+	/* [수정] 대기자들을 깨운다. */
+	wake_up_all(&dmzap->resv_wq);
 
 	clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 }
