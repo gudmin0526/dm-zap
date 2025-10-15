@@ -77,7 +77,7 @@ inline void dmzap_bio_endio(struct bio *bio, blk_status_t status)
  */
 sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap)
 {
-	return dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->wp;
+	return READ_ONCE(dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->wp);
 }
 
 /* [수정]
@@ -396,7 +396,7 @@ static void dmzap_chunk_work_(struct work_struct *work)
 		/* [수정] 동기화를 위해 자신의 turn을 기다린다 */
 		if (bio_op(bio) == REQ_OP_WRITE) {
 			wait_event(dmzap->resv_wq, 
-					   READ_ONCE(dmzap_get_seq_wp(dmzap)) == bioctx->resv_wp);
+					   dmzap_get_seq_wp(dmzap) == bioctx->resv_wp);
 		}
 		dmzap_handle_bio(dmzap, cw, bio);
 		mutex_lock(&dmzap->chunk_lock);
