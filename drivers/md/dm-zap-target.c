@@ -296,10 +296,6 @@ int dmzap_handle_bio(struct dmzap_target *dmzap,
 	int ret;
 	struct dmzap_bioctx *bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
 
-	/* [로그] */
-	printk(KERN_INFO "dmzap_handle_bio: op[%d], lsa: %llu, resv_wp: %llu, size: %u",
-			bio_op(bio), (u64)bio->bi_iter.bi_sector, (u64)bioctx->resv_wp, bio_sectors(bio));
-
 	if (dmzap->dev->flags & DMZ_BDEV_DYING) {
 		ret = -EIO;
 		goto out;
@@ -355,6 +351,8 @@ int dmzap_handle_bio(struct dmzap_target *dmzap,
 		dmzap->wa_print_time = jiffies;
 	}
 out:
+	if (bio_op(bio) == REQ_OP_WRITE)
+		clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 	dmzap_bio_endio(bio, errno_to_blk_status(ret));
 	return ret;
 }
@@ -548,9 +546,6 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	dmzap_init_bioctx(dmzap,bio);
 
 	spin_lock(&dmzap->resv_lock);
-
-	printk(KERN_INFO "dmzap_map(0): op[%d], lba: %llu, size: %u",
-			bio_op(bio), bio->bi_iter.bi_sector, bio_sectors(bio));
 	
 	/* Set the BIO pending in the flush list */
 	if (!nr_sectors && bio_op(bio) == REQ_OP_WRITE) {
@@ -576,9 +571,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	}
 
 	/* The BIO should be block aligned */
-	if ((nr_sectors & DMZ_BLOCK_SECTORS_MASK) || (sector & DMZ_BLOCK_SECTORS_MASK)) {
-		printk(KERN_INFO "dmzap_map(3): BIO isn't block aligned.");
-		
+	if ((nr_sectors & DMZ_BLOCK_SECTORS_MASK) || (sector & DMZ_BLOCK_SECTORS_MASK)) {		
 		spin_unlock(&dmzap->resv_lock);
 		return DM_MAPIO_KILL;
 	}
@@ -588,14 +581,10 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	if (chunk_sector + nr_sectors > dev->zone_nr_sectors) {
 		sector_t original_sectors = nr_sectors;
 
-		/* [로그] bio 분할 전, bio의 시작 섹터와 섹터 크기를 출력 */
-		printk(KERN_INFO "dmzap_map(4): before split. op[%d], orig[start: %llu, offset: %llu]",
-				bio_op(bio), sector, chunk_sector);
-		
 		dm_accept_partial_bio(bio, dev->zone_nr_sectors - chunk_sector);
 		
 		/* [로그] bio 분할 후, bio의 시작 섹터와 섹터 크기를 출력 */
-		printk(KERN_INFO "dmzap_map(5): after split. op[%d], orig[start:%llu, size:(%u -> %u)]",
+		printk(KERN_INFO "dmzap_map(3): after split. op[%d], orig[start:%llu, size:(%u -> %u)]",
 				bio_op(bio), sector, original_sectors, bio_sectors(bio));
 	}
 	
@@ -607,7 +596,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	if (ret) {
 		/* [수정] 큐잉이 실패했다면 예약 wp 롤백 */
 		if (bio_op(bio) == REQ_OP_WRITE) {
-			printk(KERN_INFO "dmzap_map(6): queueing failed.");
+			printk(KERN_INFO "dmzap_map(4): queueing failed.");
 			dmzap_update_resv_seq_wp(dmzap, -bio_sectors(bio));
 		}
 
