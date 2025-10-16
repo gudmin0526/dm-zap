@@ -559,13 +559,13 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	spin_lock(&dmzap->resv_lock);
 	
 	/* Set the BIO pending in the flush list */
-	if (!nr_sectors && bio_op(bio) == REQ_OP_WRITE) {
+	if (bio_op(bio) == REQ_OP_FLUSH || (!nr_sectors && bio_op(bio) == REQ_OP_WRITE)) {
+		printk(KERN_INFO "dmzap_map: op[%d], flush work", bio_op(bio));
+		spin_unlock(&dmzap->resv_lock);
 		spin_lock(&dmzap->flush_lock);
 		bio_list_add(&dmzap->flush_list, bio);
 		spin_unlock(&dmzap->flush_lock);
 		mod_delayed_work(dmzap->flush_wq, &dmzap->flush_work, 0);
-		
-		spin_unlock(&dmzap->resv_lock);
 		return DM_MAPIO_SUBMITTED;
 	}
 
@@ -594,7 +594,6 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 
 		dm_accept_partial_bio(bio, dev->zone_nr_sectors - chunk_sector);
 		
-		/* [로그] bio 분할 후, bio의 시작 섹터와 섹터 크기를 출력 */
 		printk(KERN_INFO "dmzap_map(3): after split. op[%d], orig[start:%llu, size:(%u -> %u)]",
 				bio_op(bio), sector, original_sectors, bio_sectors(bio));
 	}
@@ -605,6 +604,8 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		if (dmzap_get_resv_seq_wp(dmzap) >= zone->start + zone->len) {
 			if (dmzap->dmzap_zone_resv_wp >= dmzap->nr_internal_zones - 1)
 				return DM_MAPIO_KILL;
+			printk(KERN_INFO "dmzap_map: zone_resv_wp update. [%llu -> %llu]",
+				dmzap->zone_resv_wp, dmzap_zone->resv_wp+1);
 			dmzap->dmzap_zone_resv_wp++;
 		}
 	}
