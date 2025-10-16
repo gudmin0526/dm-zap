@@ -85,14 +85,14 @@ sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap)
  */
 sector_t dmzap_get_resv_seq_wp(struct dmzap_target *dmzap)
 {
-	return READ_ONCE(dmzap->dmzap_zones[dmzap->dmzap_zone_wp].resv_wp);
+	return READ_ONCE(dmzap->dmzap_zones[dmzap->dmzap_zone_resv_wp].resv_wp);
 }
 
 /* [수정]
  * Advance the resv write pointer (sector)
  */
 void dmzap_update_resv_seq_wp(struct dmzap_target *dmzap, sector_t sector) {
-	dmzap->dmzap_zones[dmzap->dmzap_zone_wp].resv_wp += sector;
+	dmzap->dmzap_zones[dmzap->dmzap_zone_resv_wp].resv_wp += sector;
 }
 
 //TODO is this nessesary?
@@ -222,6 +222,7 @@ int dmzap_zones_init(struct dmzap_target *dmzap)
 	}
 
 	dmzap->dmzap_zone_wp = 0;
+	dmzap->dmzap_zone_resv_wp = 0;
 	dmzap->debug_int = 0;
 
 	return 0;
@@ -538,6 +539,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	struct dmzap_target *dmzap = ti->private;
 	struct dmz_dev *dev = dmzap->dev;
 	struct dmzap_bioctx *bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
+	struct blk_zone	*zone = dmzap->dmzap_zones[dmzap->dmzap_zone_resv_wp].zone;
 	sector_t sector = bio->bi_iter.bi_sector;
 	unsigned int nr_sectors = bio_sectors(bio);
 	sector_t chunk_sector;
@@ -597,8 +599,15 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 				bio_op(bio), sector, original_sectors, bio_sectors(bio));
 	}
 	
-	if (bio_op(bio) == REQ_OP_WRITE)
+	if (bio_op(bio) == REQ_OP_WRITE) {
 		dmzap_update_resv_seq_wp(dmzap, bio_sectors(bio));
+		
+		if (dmzap_get_resv_seq_wp(dmzap) >= zone->start + zone->len) {
+			if (dmzap->dmzap_zone_resv_wp >= dmzap->nr_internal_zones - 1)
+				return DM_MAPIO_KILL;
+			dmzap->dmzap_zone_resv_wp++;
+		}
+	}
 
 	/* Now ready to handle this BIO */
 	ret = dmzap_queue_chunk_work(dmzap, bio);	

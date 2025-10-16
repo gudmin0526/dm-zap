@@ -206,6 +206,8 @@ struct dmzap_target {
 	struct blk_zone		*internal_zones;
 	/* write pointer that indicates the active zone */
 	u32 dmzap_zone_wp;
+	/* write pointer that indicates the active resv zone */
+	u32 dmzap_zone_resv_wp;
 
 	//TODO pointers to list head
 	/* Pointer to user zones */
