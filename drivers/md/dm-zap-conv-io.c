@@ -106,6 +106,7 @@ static inline void dmzap_bio_end_wr(struct bio *bio,
 
 		ret = dmzap_map_update(dmzap,
 			dmz_sect2blk(bioctx->user_sec),
+			dmz_sect2blk(bioctx->resv_wp),
 			dmz_bio_blocks(bio));
 
 		dmzap_update_seq_wp(dmzap, bio_sectors(bio));
