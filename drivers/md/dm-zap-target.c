@@ -397,7 +397,7 @@ static void dmzap_chunk_work_(struct work_struct *work)
 		if (bio_op(bio) == REQ_OP_WRITE && dmzap_get_seq_wp(dmzap) != bioctx->resv_wp) {
 			printk(KERN_INFO "dmzap_chunk_work_: Wait [%llu -> %llu]", 
 				bioctx->resv_wp, dmzap_get_seq_wp(dmzap));
-			wait_event(dmzap->resv_wq, 
+			wait_event(dmzap->resv_wq, dmzap_get_seq_wp(dmzap) == bioctx->resv_wp);
 			printk(KERN_INFO "dmzap_chunk_work_: Awakened [%llu -> %llu]", 
 				bioctx->resv_wp, dmzap_get_seq_wp(dmzap));
 		}
