@@ -104,10 +104,8 @@ static inline void dmzap_bio_end_wr(struct bio *bio,
 	} else {
 		int ret;
 
-		/* [수정] 사전에 예약한 주소로 업데이트 */
 		ret = dmzap_map_update(dmzap,
 			dmz_sect2blk(bioctx->user_sec),
-			dmz_sect2blk(bioctx->resv_wp),
 			dmz_bio_blocks(bio));
 
 		dmzap_update_seq_wp(dmzap, bio_sectors(bio));
@@ -118,6 +116,7 @@ static inline void dmzap_bio_end_wr(struct bio *bio,
 	
 	/* [수정] 대기자들을 깨운다. */
 	wake_up_all(&dmzap->resv_wq);
+	printk(KERN_INFO "dmzap_bio_end_wr: Wake up [%llu]", dmzap_get_seq_wp(dmzap));
 
 	clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 }

@@ -85,7 +85,7 @@ sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap)
  */
 sector_t dmzap_get_resv_seq_wp(struct dmzap_target *dmzap)
 {
-	return dmzap->dmzap_zones[dmzap->dmzap_zone_wp].resv_wp;
+	return READ_ONCE(dmzap->dmzap_zones[dmzap->dmzap_zone_wp].resv_wp);
 }
 
 /* [수정]
@@ -394,9 +394,12 @@ static void dmzap_chunk_work_(struct work_struct *work)
 		bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
 
 		/* [수정] 동기화를 위해 자신의 turn을 기다린다 */
-		if (bio_op(bio) == REQ_OP_WRITE) {
+		if (bio_op(bio) == REQ_OP_WRITE && dmzap_get_seq_wp(dmzap) != bioctx->resv_wp) {
+			printk(KERN_INFO "dmzap_chunk_work_: Wait [%llu -> %llu]", 
+				bioctx->resv_wp, dmzap_get_seq_wp(dmzap));
 			wait_event(dmzap->resv_wq, 
-					   dmzap_get_seq_wp(dmzap) == bioctx->resv_wp);
+			printk(KERN_INFO "dmzap_chunk_work_: Awakened [%llu -> %llu]", 
+				bioctx->resv_wp, dmzap_get_seq_wp(dmzap));
 		}
 		dmzap_handle_bio(dmzap, cw, bio);
 		mutex_lock(&dmzap->chunk_lock);
@@ -568,11 +571,11 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	if (bio_op(bio) == REQ_OP_WRITE) {
 		bioctx->resv_wp = dmzap_get_resv_seq_wp(dmzap);
 		/* [로그] 예약한 wp 출력 */
-		printk(KERN_INFO "dmzap_map(1): op[%d], lba: %llu, resv_wp: %llu, size: %u",
+		printk(KERN_INFO "dmzap_map: op[%d], lba: %llu, resv_wp: %llu, size: %u",
 				bio_op(bio), bio->bi_iter.bi_sector, bioctx->resv_wp, bio_sectors(bio));
 		sector = bioctx->resv_wp;
 	} else if (bio_op(bio) == REQ_OP_READ) {
-		printk(KERN_INFO "dmzap_map(2): op[%d], lba: %llu, size: %u",
+		printk(KERN_INFO "dmzap_map: op[%d], lba: %llu, size: %u",
 				bio_op(bio), bio->bi_iter.bi_sector, bio_sectors(bio));
 	}
 
