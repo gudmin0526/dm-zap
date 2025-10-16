@@ -605,7 +605,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 			if (dmzap->dmzap_zone_resv_wp >= dmzap->nr_internal_zones - 1)
 				return DM_MAPIO_KILL;
 			printk(KERN_INFO "dmzap_map: zone_resv_wp update. [%llu -> %llu]",
-				dmzap->dmzap_zone_resv_wp, dmzap_zone->dmzap_resv_wp+1);
+				dmzap->dmzap_zone_resv_wp, dmzap->dmzap_zone_resv_wp+1);
 			dmzap->dmzap_zone_resv_wp++;
 		}
 	}
