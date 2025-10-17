@@ -84,6 +84,7 @@ void dmzap_update_seq_wp(struct dmzap_target *dmzap, sector_t bio_sectors)
 				return;
 			}
 		}
+		printk(KERN_INFO "dmzap_update_seq_wp: Find new zone to write to zone[%u]", dmzap->dmzap_zone_wp);
 		dmz_dev_info(dmzap->dev, "Device is completely full.\n");
 	}
 }
@@ -105,7 +106,7 @@ static inline void dmzap_bio_end_wr(struct bio *bio,
 
 		ret = dmzap_map_update(dmzap,
 			dmz_sect2blk(bioctx->user_sec),
-			dmz_sect2blk(dmzap_get_seq_wp(dmzap)),
+			dmz_sect2blk(bioctx->resv_wp),
 			dmz_bio_blocks(bio));
 
 		dmzap_update_seq_wp(dmzap, bio_sectors(bio));
@@ -113,6 +114,10 @@ static inline void dmzap_bio_end_wr(struct bio *bio,
 		if(ret)
 			dmz_dev_err(dmzap->dev, "endio mapping failed!");
 	}
+	
+	/* [수정] 대기자들을 깨운다. */
+	wake_up_all(&dmzap->resv_wq);
+	printk(KERN_INFO "dmzap_bio_end_wr: Wake up [%llu]", dmzap_get_seq_wp(dmzap));
 
 	clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 }
@@ -185,7 +190,7 @@ static int dmzap_submit_bio(struct dmzap_target *dmzap,
 	//bio_advance(bio, clone->bi_iter.bi_size);
 
 	/* [로그] 원본과 클론 bio의 주소, 시작 섹터, 크기 정보 출력 */
-	printk(KERN_INFO "dmzap_submit_bio: Cloning BIO. op[%d], orig[start:%llu, size:%u] -> clone[start:%llu, size:%u]\n",
+	printk(KERN_INFO "dmzap_submit_bio: op[%d], orig[start:%llu, size:%u] -> clone[start:%llu, size:%u]\n",
 			bio_op(bio),
 			(u64)bio->bi_iter.bi_sector, bio_sectors(bio),
 	    	(u64)clone->bi_iter.bi_sector, bio_sectors(clone));
@@ -248,6 +253,7 @@ int dmzap_conv_read(struct dmzap_target *dmzap, struct bio *bio)
 int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 {
 	int ret;
+	struct dmzap_bioctx *bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
 
 	/* We can only have one outstanding write at a time */
 	while(test_and_set_bit_lock(DMZAP_WR_OUTSTANDING,
@@ -257,7 +263,7 @@ int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 	if (dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->cond == BLK_ZONE_COND_READONLY)
 		return -EROFS;
 
-	ret = dmzap_submit_bio(dmzap, dmzap_get_seq_wp(dmzap), bio);
+	ret = dmzap_submit_bio(dmzap, bioctx->resv_wp, bio);
 	if (ret) {
 		/* Out of memory, try again later */
 		clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
@@ -266,7 +272,6 @@ int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 
 	return DM_MAPIO_SUBMITTED;
 }
-
 
 int dmzap_handle_discard(struct dmzap_target *dmzap, struct bio *bio)
 {

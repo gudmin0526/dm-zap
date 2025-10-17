@@ -95,6 +95,11 @@ struct dmzap_zone {
 	struct mutex reclaim_class_lock;
 
 	struct mutex lock;
+
+	/* [수정] 현재 예약된 wp */
+	sector_t resv_wp;
+
+	/* */
 };
 
 struct dmzap_fegc_heap{
@@ -201,6 +206,8 @@ struct dmzap_target {
 	struct blk_zone		*internal_zones;
 	/* write pointer that indicates the active zone */
 	u32 dmzap_zone_wp;
+	/* write pointer that indicates the active resv zone */
+	u32 dmzap_zone_resv_wp;
 
 	//TODO pointers to list head
 	/* Pointer to user zones */
@@ -277,6 +284,13 @@ struct dmzap_target {
 	struct dmzap_fegc_heap fagc_heap;
 	struct mutex *user_zone_locks;
 
+	
+	/* [수정] For wp reservation */
+	spinlock_t 		resv_lock;
+
+	/* [수정] wp 동기화를 위한 wait queue */
+	wait_queue_head_t resv_wq;
+	bool io_error;
 };
 
 /*
@@ -287,6 +301,8 @@ struct dmzap_bioctx {
 	struct bio		*bio;
 	refcount_t		ref;
 	sector_t		user_sec;
+	/* [수정] 예약한 wp 추가 */
+	sector_t 	    resv_wp;
 };
 
 /* dm-zap-target.c */
@@ -313,6 +329,8 @@ int dmzap_remap_copy(struct dmzap_target *dmzap,
 
 sector_t dmzap_get_seq_wp(struct dmzap_target *dmzap);
 void dmzap_update_seq_wp(struct dmzap_target *dmzap, sector_t bio_sectors);
+sector_t dmzap_get_resv_seq_wp(struct dmzap_target *dmzap);
+void dmzap_update_resv_seq_wp(struct dmzap_target *dmzap, sector_t sector);
 inline void print_mapping(struct dmzap_target *dmzap);
 int dmzap_handle_discard(struct dmzap_target *dmzap, struct bio *bio);
 int dmzap_map_seq(struct dmzap_target *dmzap, struct bio *bio);
