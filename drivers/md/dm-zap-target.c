@@ -561,11 +561,11 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	/* Set the BIO pending in the flush list */
 	if (bio_op(bio) == REQ_OP_FLUSH || (!nr_sectors && bio_op(bio) == REQ_OP_WRITE)) {
 		printk(KERN_INFO "dmzap_map: op[%d], flush work", bio_op(bio));
-		spin_unlock(&dmzap->resv_lock);
 		spin_lock(&dmzap->flush_lock);
 		bio_list_add(&dmzap->flush_list, bio);
 		spin_unlock(&dmzap->flush_lock);
 		mod_delayed_work(dmzap->flush_wq, &dmzap->flush_work, 0);
+		spin_unlock(&dmzap->resv_lock);
 		return DM_MAPIO_SUBMITTED;
 	}
 
@@ -602,8 +602,10 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		dmzap_update_resv_seq_wp(dmzap, bio_sectors(bio));
 		
 		if (dmzap_get_resv_seq_wp(dmzap) >= zone->start + zone->len) {
-			if (dmzap->dmzap_zone_resv_wp >= dmzap->nr_internal_zones - 1)
+			if (dmzap->dmzap_zone_resv_wp >= dmzap->nr_internal_zones - 1) {
+				spin_unlock(&dmzap->resv_lock);
 				return DM_MAPIO_KILL;
+			}
 			printk(KERN_INFO "dmzap_map: zone_resv_wp update. [%llu -> %llu]",
 				dmzap->dmzap_zone_resv_wp, dmzap->dmzap_zone_resv_wp+1);
 			dmzap->dmzap_zone_resv_wp++;
