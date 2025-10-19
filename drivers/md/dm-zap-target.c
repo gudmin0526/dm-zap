@@ -556,8 +556,6 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 
 	/* Initialize the BIO context */
 	dmzap_init_bioctx(dmzap,bio);
-
-	spin_lock(&dmzap->resv_lock);
 	
 	/* Set the BIO pending in the flush list */
 	if (bio_op(bio) == REQ_OP_FLUSH || (!nr_sectors && bio_op(bio) == REQ_OP_WRITE)) {
@@ -566,10 +564,10 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		bio_list_add(&dmzap->flush_list, bio);
 		spin_unlock(&dmzap->flush_lock);
 		mod_delayed_work(dmzap->flush_wq, &dmzap->flush_work, 0);
-			
-		spin_unlock(&dmzap->resv_lock);
 		return DM_MAPIO_SUBMITTED;
 	}
+
+	spin_lock(&dmzap->resv_lock);
 
 	/* [수정] 쓰기 요청의 경우 wp를 예약해 bioctx에 저장 */
 	if (bio_op(bio) == REQ_OP_WRITE) {
