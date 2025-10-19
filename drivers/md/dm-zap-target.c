@@ -550,6 +550,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 
 	bio_set_dev(bio, dev->bdev);
 
+
 	if (!nr_sectors && bio_op(bio) != REQ_OP_WRITE)
 		return DM_MAPIO_REMAPPED;
 
@@ -565,6 +566,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 		bio_list_add(&dmzap->flush_list, bio);
 		spin_unlock(&dmzap->flush_lock);
 		mod_delayed_work(dmzap->flush_wq, &dmzap->flush_work, 0);
+			
 		spin_unlock(&dmzap->resv_lock);
 		return DM_MAPIO_SUBMITTED;
 	}
@@ -594,7 +596,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 
 		dm_accept_partial_bio(bio, dev->zone_nr_sectors - chunk_sector);
 		
-		printk(KERN_INFO "dmzap_map(3): after split. op[%d], orig[start:%llu, size:(%u -> %u)]",
+		printk(KERN_INFO "dmzap_map: after split. op[%d], orig[start:%llu, size:(%u -> %u)]",
 				bio_op(bio), sector, original_sectors, bio_sectors(bio));
 	}
 	
@@ -617,7 +619,7 @@ static int dmzap_map(struct dm_target *ti, struct bio *bio)
 	if (ret) {
 		/* [수정] 큐잉이 실패했다면 예약 wp 롤백 */
 		if (bio_op(bio) == REQ_OP_WRITE) {
-			printk(KERN_INFO "dmzap_map(4): queueing failed.");
+			printk(KERN_INFO "dmzap_map: queueing failed.");
 			dmzap_update_resv_seq_wp(dmzap, -bio_sectors(bio));
 		}
 
