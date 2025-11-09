@@ -248,10 +248,12 @@ int dmzap_conv_read(struct dmzap_target *dmzap, struct bio *bio)
 int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 {
 	int ret;
-	unsigned int size, submitted;
-	sector_t left = bio_sectors(bio);
-	sector_t n_sectors;
+	unsigned int size;
+	sector_t submitted;
+	sector_t left = dmz_bio_blocks(bio);
+	sector_t user;
 	struct blk_zone *zone;
+	__u64 nr_blocks = 0;
 
 	/* We can only have one outstanding write at a time */
 	while(test_and_set_bit_lock(DMZAP_WR_OUTSTANDING,
@@ -259,36 +261,89 @@ int dmzap_conv_write(struct dmzap_target *dmzap, struct bio *bio)
 		io_schedule();
 
 	while (left) {
+		user = bio->bi_iter.bi_sector;
 		zone = dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone;
 
 		if (zone->cond == BLK_ZONE_COND_READONLY)
 			return -EROFS;
 		
-		n_sectors = zone->len + zone->start - zone->wp;
-		if(left > n_sectors) {
-			submitted = n_sectors;
+		nr_blocks = dmz_sect2blk(zone->start + zone->len) - dmz_sect2blk(zone->wp);
+		
+		if(left > nr_blocks) {
+			submitted = nr_blocks;
 		} else {
 			submitted = left;
 		}
-		size = submitted << SECTOR_SHIFT;
+		size = submitted << DMZ_BLOCK_SHIFT;
 
-		swap(bio->bi_iter.bi_size, size);
-		ret = dmzap_submit_bio(dmzap, dmzap_get_seq_wp(dmzap), bio);
-		swap(bio->bi_iter.bi_size, size);
+		ret = dmzap_submit_bio1(dmzap, bio, 
+			dmzap_get_seq_wp(dmzap), submitted);
 		
 		if (ret) {
 			/* Out of memory, try again later */
 			clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 			return ret;
 		}
+		
+		ret = dmzap_map_update(dmzap,
+			dmz_sect2blk(user),
+			dmz_sect2blk(dmzap_get_seq_wp(dmzap)),
+			submitted);
+
+		dmzap_update_seq_wp(dmzap, dmz_blk2sect(submitted));
+
+		if(ret)
+			dmz_dev_err(dmzap->dev, "endio mapping failed!");
 
 		bio_advance(bio, size);
 		left -= submitted;
 	}
+	clear_bit_unlock(DMZAP_WR_OUTSTANDING, &dmzap->write_bitmap);
 
 	return DM_MAPIO_SUBMITTED;
 }
+static int dmzap_submit_bio1(struct dmzap_target *dmzap, struct bio *bio, sector_t sector, unsigned int nr_blocks)
+{
+	struct dmzap_bioctx *bioctx = dm_per_bio_data(bio, sizeof(struct dmzap_bioctx));
+	struct bio *clone;
 
+	clone = bio_clone_fast(bio, GFP_NOIO, &dmzap->bio_set);
+	if (!clone)
+		return -ENOMEM;
+
+	bio_set_dev(clone, dmzap->dev->bdev);
+
+	clone->bi_iter.bi_sector = sector;
+	clone->bi_iter.bi_size = nr_blocks << DMZ_BLOCK_SHIFT;
+	clone->bi_end_io = dmzap_clone_endio1;
+	clone->bi_private = bioctx;
+
+	// bio_advance(bio, clone->bi_iter.bi_size);
+
+	refcount_inc(&bioctx->ref);
+	submit_bio_noacct(clone);
+
+	switch (bio_op(bio)) {
+	case REQ_OP_WRITE:
+		dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone_age = jiffies;
+		dmzap->dmzap_zones[dmzap->dmzap_zone_wp].zone->cond = BLK_ZONE_COND_IMP_OPEN;
+		break;
+	}
+
+	return 0;
+}
+static void dmzap_clone_endio1(struct bio *clone)
+{
+	struct dmzap_bioctx *bioctx = clone->bi_private;
+	struct bio *bio = bioctx->bio;
+	blk_status_t status = clone->bi_status;
+
+	if (status != BLK_STS_OK && bio->bi_status == BLK_STS_OK)
+		bio->bi_status = status;
+
+	bio_put(clone);
+	dmzap_bio_endio(bio, status);
+}
 
 int dmzap_handle_discard(struct dmzap_target *dmzap, struct bio *bio)
 {
